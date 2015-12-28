@@ -1,4 +1,4 @@
-package topcoder.com.anheuser;
+package topcoder.topcoder.anheuser;
 
 import org.junit.Test;
 

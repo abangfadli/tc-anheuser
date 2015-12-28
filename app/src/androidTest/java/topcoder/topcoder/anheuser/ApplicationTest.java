@@ -1,4 +1,4 @@
-package topcoder.com.anheuser;
+package topcoder.topcoder.anheuser;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

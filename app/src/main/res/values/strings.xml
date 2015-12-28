@@ -1,4 +1,30 @@
 <resources>
     <string name="app_name">Anheuser</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_search">Search</string>
+    <string name="action_microphone">Microphone</string>
+
+    <!-- HOME PAGE -->
+    <string name="view_order">View Order</string>
+    <string name="main_sync_progress">Sync in Progress</string>
+
+
+    <!-- ORDER DETAIL -->
+    <string name="order_complete">Order Complete</string>
+    <string name="order_number_format">Order number %1$s</string>
+    <string name="order_total_format">Order Total: %1$s</string>
+
+    <string name="sample_account_name">Account Name</string>
+    <string name="sample_account_address">123 East Main Street</string>
+    <string name="sample_order_number">Order number 123456</string>
+    <string name="sample_order_total">Order Total: $88,888.88</string>
+
+    <!-- ORDER DETAIL ITEM -->
+    <string name="order_item_quantity_format">Qty: %1$s</string>
+    <string name="order_item_unit_price_format">Unit Price: %1$s</string>
+    <string name="order_item_total_format">Total Price: %1$s</string>
+
+    <string name="sample_order_item_name">Product Lorem Ipsum</string>
+    <string name="sample_order_item_quantity">Qty: 33</string>
+    <string name="sample_order_item_unit_price">Unit Price: $88</string>
+    <string name="sample_order_item_total">Total Price: $8,8888.88</string>
 </resources>
