@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../hybrid/HybridSampleApps/AccountEditor/AccountEditor.iml" filepath="$PROJECT_DIR$/../../hybrid/HybridSampleApps/AccountEditor/AccountEditor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../native/NativeSampleApps/AppConfigurator/AppConfigurator.iml" filepath="$PROJECT_DIR$/../../native/NativeSampleApps/AppConfigurator/AppConfigurator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../native/NativeSampleApps/ConfiguredApp/ConfiguredApp.iml" filepath="$PROJECT_DIR$/../../native/NativeSampleApps/ConfiguredApp/ConfiguredApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../hybrid/HybridSampleApps/HybridSampleApps.iml" filepath="$PROJECT_DIR$/../../hybrid/HybridSampleApps/HybridSampleApps.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../native/NativeSampleApps/NativeSampleApps.iml" filepath="$PROJECT_DIR$/../../native/NativeSampleApps/NativeSampleApps.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../hybrid/HybridSampleApps/NoteSync/NoteSync.iml" filepath="$PROJECT_DIR$/../../hybrid/HybridSampleApps/NoteSync/NoteSync.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../reactnative/ReactNativeTemplateApp/ReactNativeTemplateApp.iml" filepath="$PROJECT_DIR$/../../reactnative/ReactNativeTemplateApp/ReactNativeTemplateApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../native/NativeSampleApps/RestExplorer/RestExplorer.iml" filepath="$PROJECT_DIR$/../../native/NativeSampleApps/RestExplorer/RestExplorer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../SalesforceHybrid/SalesforceHybrid.iml" filepath="$PROJECT_DIR$/../SalesforceHybrid/SalesforceHybrid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../SalesforceMobileSDK-Android.iml" filepath="$PROJECT_DIR$/../../SalesforceMobileSDK-Android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../SalesforceReact/SalesforceReact.iml" filepath="$PROJECT_DIR$/../SalesforceReact/SalesforceReact.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SalesforceSDK.iml" filepath="$PROJECT_DIR$/SalesforceSDK.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../SmartStore/SmartStore.iml" filepath="$PROJECT_DIR$/../SmartStore/SmartStore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../SmartSync/SmartSync.iml" filepath="$PROJECT_DIR$/../SmartSync/SmartSync.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../native/NativeSampleApps/SmartSyncExplorer/SmartSyncExplorer.iml" filepath="$PROJECT_DIR$/../../native/NativeSampleApps/SmartSyncExplorer/SmartSyncExplorer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../hybrid/HybridSampleApps/SmartSyncExplorerHybrid/SmartSyncExplorerHybrid.iml" filepath="$PROJECT_DIR$/../../hybrid/HybridSampleApps/SmartSyncExplorerHybrid/SmartSyncExplorerHybrid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../native/TemplateApp/TemplateApp.iml" filepath="$PROJECT_DIR$/../../native/TemplateApp/TemplateApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../external/cordova/cordova.iml" filepath="$PROJECT_DIR$/../../external/cordova/cordova.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../external/external.iml" filepath="$PROJECT_DIR$/../../external/external.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../external/cordova/framework/framework.iml" filepath="$PROJECT_DIR$/../../external/cordova/framework/framework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../hybrid/hybrid.iml" filepath="$PROJECT_DIR$/../../hybrid/hybrid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../libs.iml" filepath="$PROJECT_DIR$/../libs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../native/native.iml" filepath="$PROJECT_DIR$/../../native/native.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../reactnative/reactnative.iml" filepath="$PROJECT_DIR$/../../reactnative/reactnative.iml" />
+    </modules>
+  </component>
+</project>

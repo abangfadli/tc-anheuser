@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/src/main/jniLibs"/><source path="/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/external/sqlcipher/libs"/></dataSet><dataSet config="release"><source path="/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/src/release/jniLibs"/></dataSet></merger>

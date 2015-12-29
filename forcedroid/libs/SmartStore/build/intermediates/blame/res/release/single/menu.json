@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/build/intermediates/res/merged/release/menu/sf__clear_custom_url.xml",
+        "source": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/build/intermediates/exploded-aar/Anheuser.forcedroid.libs/SalesforceSDK/unspecified/res/menu/sf__clear_custom_url.xml"
+    },
+    {
+        "merged": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/build/intermediates/res/merged/release/menu/sf__login.xml",
+        "source": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/build/intermediates/exploded-aar/Anheuser.forcedroid.libs/SalesforceSDK/unspecified/res/menu/sf__login.xml"
+    }
+]
