@@ -13,7 +13,6 @@
             <option value="$PROJECT_DIR$/forcedroid/libs" />
             <option value="$PROJECT_DIR$/forcedroid/libs/SalesforceSDK" />
             <option value="$PROJECT_DIR$/forcedroid/libs/SmartStore" />
-            <option value="$PROJECT_DIR$/forcedroid/libs/SmartSync" />
           </set>
         </option>
         <option name="myModules">
@@ -24,7 +23,6 @@
             <option value="$PROJECT_DIR$/forcedroid/libs" />
             <option value="$PROJECT_DIR$/forcedroid/libs/SalesforceSDK" />
             <option value="$PROJECT_DIR$/forcedroid/libs/SmartStore" />
-            <option value="$PROJECT_DIR$/forcedroid/libs/SmartSync" />
           </set>
         </option>
       </GradleProjectSettings>

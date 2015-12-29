@@ -7,9 +7,11 @@ import java.util.Locale;
 import topcoder.topcoder.anheuser.model.OrderItemModelData;
 import topcoder.topcoder.anheuser.model.OrderModelData;
 import topcoder.topcoder.anheuser.util.CurrencyUtil;
+import topcoder.topcoder.anheuser.view.data.common.Coordinate;
 import topcoder.topcoder.anheuser.view.data.common.Order;
 import topcoder.topcoder.anheuser.view.data.common.OrderItem;
 import topcoder.topcoder.anheuser.view.data.main.MainTile;
+import topcoder.topcoder.anheuser.view.data.main.Overview;
 
 /**
  * Created by ahmadfadli on 12/29/15.
@@ -21,6 +23,8 @@ public class OrderConverter {
         order.setName(modelData.getAccount().getName());
         order.setOrderNumber(modelData.getOrderNumber());
         order.setStatus(modelData.getStatus());
+        order.setTotal(CurrencyUtil.formatCurrency("USD", Locale.US, modelData.getTotalAmount()));
+
         if(modelData.getShippingAddress() != null) {
             order.setAddress(modelData.getShippingAddress().getStreet());
             order.setLatitude(modelData.getShippingAddress().getLatitude());
@@ -33,13 +37,30 @@ public class OrderConverter {
         return order;
     }
 
-    public static List<MainTile> convertOrder(List<OrderModelData> modelDataList) {
-        List<MainTile> orderList = new ArrayList<>();
+    public static List<Order> convertOrder(List<OrderModelData> modelDataList) {
+        List<Order> orderList = new ArrayList<>();
         for(int i = 0; i < modelDataList.size(); i++) {
             orderList.add(convertOrder(modelDataList.get(i)));
         }
 
         return orderList;
+    }
+
+
+    public static Overview generateMapOverviewTile(List<OrderModelData> orderModelDataList) {
+        Overview mainTile = new Overview();
+        for(int i = 0; i < orderModelDataList.size(); i++) {
+            OrderModelData orderModelData = orderModelDataList.get(i);
+            if(orderModelData.getShippingAddress() != null) {
+                mainTile.getCoordinateList().add(new Coordinate(orderModelData.getShippingAddress().getLatitude(), orderModelData.getShippingAddress().getLongitude()));
+            }
+        }
+
+        if(mainTile.getCoordinateList().size() > 0) {
+            mainTile.setCenterCoordinate(mainTile.getCoordinateList().get(0));
+        }
+
+        return mainTile;
     }
 
     public static OrderItem convertOrderItem(OrderItemModelData modelData) {

@@ -1,8 +1,11 @@
 package topcoder.topcoder.anheuser.view.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,21 +14,30 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.android.volley.NoConnectionError;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.salesforce.androidsdk.rest.RestClient;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import butterknife.Bind;
+import rx.functions.Action1;
 import topcoder.topcoder.anheuser.R;
 import topcoder.topcoder.anheuser.constant.CommonConstants;
-import topcoder.topcoder.anheuser.model.ModelHolder;
+import topcoder.topcoder.anheuser.util.MapUtil;
 import topcoder.topcoder.anheuser.util.ModelHandler;
 import topcoder.topcoder.anheuser.util.ViewExpandCollapseUtil;
 import topcoder.topcoder.anheuser.view.adapter.GridAdapter;
 import topcoder.topcoder.anheuser.view.data.common.Order;
+import topcoder.topcoder.anheuser.view.data.main.MainTile;
 import topcoder.topcoder.anheuser.view.data.main.MainViewData;
+import topcoder.topcoder.anheuser.view.data.main.Overview;
 
-public class MainActivity extends BaseActivity<MainViewData> implements AdapterView.OnItemClickListener {
+public class MainActivity extends BaseActivity<MainViewData> {
+
+    private static final int MINIMUM_LOADING_TIME = 2500; // cosmetic
 
     //================================================================================
     // VIEW OBJECT
@@ -35,6 +47,8 @@ public class MainActivity extends BaseActivity<MainViewData> implements AdapterV
 
     @Bind(R.id.layout_sync_progress)
     LinearLayout vSyncProgressLayout;
+
+    GridAdapter gridAdapter;
 
     boolean isSyncLayoutShown;
     boolean isDataFetched;
@@ -62,14 +76,8 @@ public class MainActivity extends BaseActivity<MainViewData> implements AdapterV
     @Override
     public void onResume(RestClient client) {
         super.onResume(client);
-
-        if(!isDataFetched) {
-            requestOrderList();
-            isDataFetched = true;
-        } else {
-            onViewDataChanged();
-        }
-
+        loadCachedData();
+        trySync(false);
     }
 
     @Override
@@ -86,8 +94,7 @@ public class MainActivity extends BaseActivity<MainViewData> implements AdapterV
         int id = item.getItemId();
         switch (id) {
             case android.R.id.home:
-                sync();
-                Toast.makeText(this, "Sync", Toast.LENGTH_SHORT).show();
+                trySync(true);
                 break;
         }
 
@@ -103,11 +110,46 @@ public class MainActivity extends BaseActivity<MainViewData> implements AdapterV
         if(mViewData == null) {
             setViewData(new MainViewData());
         }
+
+        if(gridAdapter == null) {
+            gridAdapter = new GridAdapter(this, new ArrayList<>());
+        }
+
+        gridAdapter = new GridAdapter(this, new ArrayList<>());
+        gridAdapter.setOnItemClicked(itemClickListener);
+        gridAdapter.setOnItemActionClicked(itemActionButtonClicked);
+        vMainTileGV.setAdapter(gridAdapter);
     }
 
     protected void initListener() {
-        vMainTileGV.setOnItemClickListener(this);
+
     }
+
+    //================================================================================
+    // LISTENER
+    //================================================================================
+    private Action1<MainTile> itemClickListener = mainTile -> {
+        if (mainTile instanceof Order) {
+            if (ModelHandler.setSelectedOrder(((Order)mainTile).getId())) {
+                Intent intent = new Intent(this, OrderDetailActivity.class);
+                startActivity(intent);
+            }
+        } else if(mainTile instanceof Overview) {
+            Intent intent = new Intent(this, FullMapActivity.class);
+            startActivity(intent);
+        }
+    };
+
+    private Action1<MainTile> itemActionButtonClicked = mainTile -> {
+        if(mainTile instanceof Order) {
+
+            double lat = ((Order) mainTile).getLatitude();
+            double lng = ((Order) mainTile).getLongitude();
+            String label = ((Order) mainTile).getName();
+
+            MapUtil.launchMaps(this, lat, lng, label);
+        }
+    };
 
     //================================================================================
     // VIEW DATA ORGANIZER
@@ -116,45 +158,68 @@ public class MainActivity extends BaseActivity<MainViewData> implements AdapterV
     protected void onViewDataChanged() {
         super.onViewDataChanged();
 
-        GridAdapter g = new GridAdapter(this, new ArrayList<>());
-        vMainTileGV.setAdapter(g);
-        g.clear();
-
-        g.addAll(mViewData.getTileList());
+        if(gridAdapter != null) {
+            gridAdapter.clear();
+            gridAdapter.addAll(mViewData.getTileList());
+        }
     }
 
-    private void sync() {
-        if(isSyncLayoutShown) {
-            ViewExpandCollapseUtil.animateCollapsing(vSyncProgressLayout);
-            isSyncLayoutShown = false;
-            return;
+    private void trySync(boolean forceRefresh) {
+        if(!isDataFetched || forceRefresh) {
+            if(isSyncLayoutShown) {
+                // Do nothing.
+            } else {
+                ViewExpandCollapseUtil.animateExpanding(vSyncProgressLayout);
+                isSyncLayoutShown = true;
+
+                // Check for internet connection
+                // Read from SmartStore -> Check if there's any dirty order
+                //  yes -> Update it first -> notify user
+                // Update order list
+
+                requestOrderList();
+                isDataFetched = true;
+            }
+        } else {
+            onViewDataChanged();
         }
+    }
 
-
-        ViewExpandCollapseUtil.animateExpanding(vSyncProgressLayout);
-        isSyncLayoutShown = true;
-
+    private void loadCachedData() {
+        mViewData.setTileList(ModelHandler.OrderRequestor.getStoredOrder());
+        onViewDataChanged();
     }
 
     private void requestOrderList() {
-        ModelHandler.OrderRequestor.requestActiveOrder(client, (titleList) -> {
-            mViewData.setTileList(titleList);
-            onViewDataChanged();
-        }, error -> {
-            Toast.makeText(this, "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
-        });
-    }
+        long startTime = System.currentTimeMillis();
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if(parent.equals(vMainTileGV)) {
-            Order selected = (Order)vMainTileGV.getItemAtPosition(position);
-            if(selected != null) {
-                if (ModelHandler.setSelectedOrder(selected.getId())) {
-                    Intent intent = new Intent(this, OrderDetailActivity.class);
-                    startActivity(intent);
-                }
+        ModelHandler.OrderRequestor.requestActiveOrder(client, (titleList) -> {
+            long diff = MINIMUM_LOADING_TIME - (System.currentTimeMillis() - startTime);
+            diff = (diff < 0 ? 0 : diff);
+
+            new Handler().postDelayed(() -> {
+                ViewExpandCollapseUtil.animateCollapsing(vSyncProgressLayout);
+                isSyncLayoutShown = false;
+
+                mViewData.setTileList(titleList);
+                onViewDataChanged();
+
+                Snackbar.make(vMainTileGV, "Order data updated", Snackbar.LENGTH_SHORT).show();
+            }, diff);
+
+        }, error -> {
+            ViewExpandCollapseUtil.animateCollapsing(vSyncProgressLayout);
+            isSyncLayoutShown = false;
+
+            String message = error.getMessage();
+
+            if (error instanceof NoConnectionError) {
+                message = getString(R.string.message_no_connection);
+            } else if(error instanceof ServerError || error instanceof TimeoutError) {
+                message = getString(R.string.message_server_error);
             }
-        }
+
+            Snackbar.make(vMainTileGV, message, Snackbar.LENGTH_LONG).show();
+        });
     }
 }

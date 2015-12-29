@@ -3,6 +3,7 @@ package topcoder.topcoder.anheuser;
 import android.app.Application;
 
 import com.salesforce.androidsdk.app.SalesforceSDKManager;
+import com.salesforce.androidsdk.smartstore.app.SmartStoreSDKManager;
 
 import topcoder.topcoder.anheuser.util.ModelHandler;
 import topcoder.topcoder.anheuser.util.SfKeyImplementation;
@@ -15,8 +16,9 @@ public class AnheuserApplication extends Application {
 
     @Override
     public void onCreate() {
+        SmartStoreSDKManager.initNative(getApplicationContext(), new SfKeyImplementation(), MainActivity.class);
+//        SalesforceSDKManager.initNative(getApplicationContext(), new SfKeyImplementation(), MainActivity.class);
         super.onCreate();
-        SalesforceSDKManager.initNative(getApplicationContext(), new SfKeyImplementation(), MainActivity.class);
         ModelHandler.init(this);
     }
 

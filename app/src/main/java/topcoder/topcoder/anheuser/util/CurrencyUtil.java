@@ -14,6 +14,6 @@ public class CurrencyUtil {
         decimalFormat = (DecimalFormat) DecimalFormat.getInstance(locale);
         decimalFormat.setCurrency(Currency.getInstance(currency));
 
-        return decimalFormat.format(amount);
+        return decimalFormat.getCurrency().getSymbol() + "" + decimalFormat.format(amount);
     }
 }

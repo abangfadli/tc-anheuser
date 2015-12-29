@@ -2,20 +2,17 @@ package topcoder.topcoder.anheuser.view.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.salesforce.androidsdk.app.SalesforceSDKManager;
 import com.salesforce.androidsdk.rest.RestClient;
-import com.salesforce.androidsdk.rest.RestRequest;
-import com.salesforce.androidsdk.rest.RestResponse;
 import com.salesforce.androidsdk.ui.SalesforceActivity;
-
-import java.io.UnsupportedEncodingException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import rx.functions.Action1;
-import rx.functions.Action2;
 import topcoder.topcoder.anheuser.R;
 import topcoder.topcoder.anheuser.constant.CommonConstants;
 import topcoder.topcoder.anheuser.view.data.BaseViewData;
@@ -82,6 +79,18 @@ public abstract class BaseActivity<VD extends BaseViewData> extends SalesforceAc
     @Override
     public void onResume(RestClient client) {
         this.client = client;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() != android.R.id.home) {
+            Snackbar snackbar =  Snackbar.make(vToolbar, "Not implemented yet", Snackbar.LENGTH_SHORT);
+            snackbar.setAction("Close", v -> {
+                snackbar.dismiss();
+            });
+            snackbar.show();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     //================================================================================

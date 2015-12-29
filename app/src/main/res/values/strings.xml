@@ -5,6 +5,8 @@
 
     <!-- HOME PAGE -->
     <string name="view_order">View Order</string>
+    <string name="completed">Completed</string>
+    <string name="today_deliveries">Today\'s Deliveries</string>
     <string name="main_sync_progress">Sync in Progress</string>
 
 
@@ -27,4 +29,6 @@
     <string name="sample_order_item_quantity">Qty: 33</string>
     <string name="sample_order_item_unit_price">Unit Price: $88</string>
     <string name="sample_order_item_total">Total Price: $8,8888.88</string>
+    <string name="message_no_connection">Check your internet connection and try again.</string>
+    <string name="message_server_error">Error occured in server. Please try again later.</string>
 </resources>

@@ -18,6 +18,10 @@ public class OrderModelData extends BaseModelData {
     private String status;
     @SerializedName("OrderNumber")
     private String orderNumber;
+    @SerializedName("TotalAmount")
+    private double totalAmount;
+
+    private boolean isDirtyCompleted;
 
     private List<OrderItemModelData> orderItemList;
 
@@ -72,6 +76,24 @@ public class OrderModelData extends BaseModelData {
 
     public OrderModelData setOrderItemList(List<OrderItemModelData> orderItemList) {
         this.orderItemList = orderItemList;
+        return this;
+    }
+
+    public double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public OrderModelData setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
+        return this;
+    }
+
+    public boolean isDirtyCompleted() {
+        return isDirtyCompleted;
+    }
+
+    public OrderModelData setDirtyCompleted(boolean dirtyCompleted) {
+        isDirtyCompleted = dirtyCompleted;
         return this;
     }
 

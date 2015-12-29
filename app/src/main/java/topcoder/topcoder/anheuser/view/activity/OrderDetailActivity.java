@@ -3,20 +3,27 @@ package topcoder.topcoder.anheuser.view.activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.volley.NoConnectionError;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.salesforce.androidsdk.rest.RestClient;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import topcoder.topcoder.anheuser.R;
 import topcoder.topcoder.anheuser.constant.CommonConstants;
+import topcoder.topcoder.anheuser.util.MapUtil;
 import topcoder.topcoder.anheuser.util.ModelHandler;
 import topcoder.topcoder.anheuser.view.data.common.Order;
 import topcoder.topcoder.anheuser.view.data.common.OrderItem;
@@ -27,8 +34,26 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
     //================================================================================
     // VIEW OBJECT
     //================================================================================
+    @Bind(R.id.fab_location)
+    FloatingActionButton vLocationFAB;
+
+    @Bind(R.id.tv_order_account_name)
+    TextView vAccountNameTV;
+
+    @Bind(R.id.tv_order_account_address)
+    TextView vAccountAddressTV;
+
+    @Bind(R.id.tv_order_number)
+    TextView vOrderNumberTV;
+
+    @Bind(R.id.tv_order_total)
+    TextView vOrderTotalTV;
+
     @Bind(R.id.layout_order_item)
     LinearLayout vOrderItemLayout;
+
+    @Bind(R.id.btn_order_complete)
+    Button vOrderCompleteBtn;
 
     boolean isDataFetched;
 
@@ -90,7 +115,7 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
 
         Order order = ModelHandler.getSelectedOrder();
         if(order == null) {
-            finish(); // Illegal
+            finish(); // Illegal State. Should not happen.
         }
 
         viewData.setOrder(order);
@@ -98,7 +123,25 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
     }
 
     protected void initListener() {
+        vOrderCompleteBtn.setOnClickListener(v -> {
+            if(!CommonConstants.OrderStatus.isCompleted(mViewData.getOrder().getStatus())) {
+                ModelHandler.OrderRequestor.putCompletedOrder(client, mViewData.getOrder().getId(), () -> {
 
+                }, error -> {
+
+                });
+            }
+        });
+
+        vLocationFAB.setOnClickListener(v -> {
+            if(mViewData.getOrder() != null) {
+                double lat = mViewData.getOrder().getLatitude();
+                double lng = mViewData.getOrder().getLongitude();
+                String label = mViewData.getOrder().getName();
+
+                MapUtil.launchMaps(this, lat, lng, label);
+            }
+        });
     }
 
     //================================================================================
@@ -108,10 +151,24 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
     protected void onViewDataChanged() {
         super.onViewDataChanged();
 
+        vAccountNameTV.setText(mViewData.getOrder().getName());
+        vAccountAddressTV.setText(mViewData.getOrder().getAddress());
+        vOrderNumberTV.setText(getString(R.string.order_number_format, mViewData.getOrder().getOrderNumber()));
+        vOrderTotalTV.setText(getString(R.string.order_total_format, mViewData.getOrder().getTotal()));
+
         vOrderItemLayout.removeAllViews();
         for(int i = 0; i < mViewData.getOrder().getOrderItemList().size(); i++) {
             OrderItemViewHolder orderItemViewHolder = new OrderItemViewHolder(this, vOrderItemLayout, mViewData.getOrder().getOrderItemList().get(i));
             vOrderItemLayout.addView(orderItemViewHolder.getRootView());
+        }
+
+
+        if(!CommonConstants.OrderStatus.isCompleted(mViewData.getOrder().getStatus())) {
+            vOrderCompleteBtn.setEnabled(true);
+            vOrderCompleteBtn.setVisibility(View.VISIBLE);
+        } else {
+            vOrderCompleteBtn.setEnabled(false);
+            vOrderCompleteBtn.setVisibility(View.GONE);
         }
     }
 
@@ -124,7 +181,15 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
             mViewData.setOrder(order);
             onViewDataChanged();
         }, error -> {
+            String message = error.getMessage();
 
+            if (error instanceof NoConnectionError) {
+                message = getString(R.string.message_no_connection);
+            } else if(error instanceof ServerError || error instanceof TimeoutError) {
+                message = getString(R.string.message_server_error);
+            }
+
+            Snackbar.make(vAccountNameTV, message, Snackbar.LENGTH_LONG).show();
         });
     }
 

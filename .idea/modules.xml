@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/Anheuser.iml" filepath="$PROJECT_DIR$/Anheuser.iml" />
       <module fileurl="file://$PROJECT_DIR$/forcedroid/libs/SalesforceSDK/SalesforceSDK.iml" filepath="$PROJECT_DIR$/forcedroid/libs/SalesforceSDK/SalesforceSDK.iml" />
       <module fileurl="file://$PROJECT_DIR$/forcedroid/libs/SmartStore/SmartStore.iml" filepath="$PROJECT_DIR$/forcedroid/libs/SmartStore/SmartStore.iml" />
-      <module fileurl="file://$PROJECT_DIR$/forcedroid/libs/SmartSync/SmartSync.iml" filepath="$PROJECT_DIR$/forcedroid/libs/SmartSync/SmartSync.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/forcedroid/forcedroid.iml" filepath="$PROJECT_DIR$/forcedroid/forcedroid.iml" />
       <module fileurl="file://$PROJECT_DIR$/forcedroid/libs/libs.iml" filepath="$PROJECT_DIR$/forcedroid/libs/libs.iml" />

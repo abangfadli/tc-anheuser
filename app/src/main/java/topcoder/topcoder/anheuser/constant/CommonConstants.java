@@ -33,15 +33,15 @@ public class CommonConstants {
         public static final String COMPLETED = "COMPLETED";
 
         public static boolean isDraft(String status) {
-            return DRAFT.equals(status);
+            return DRAFT.equalsIgnoreCase(status);
         }
 
         public static boolean isActivated(String status) {
-            return ACTIVATED.equals(status);
+            return ACTIVATED.equalsIgnoreCase(status);
         }
 
         public static boolean isCompleted(String status) {
-            return COMPLETED.equals(status);
+            return COMPLETED.equalsIgnoreCase(status);
         }
     }
 }
