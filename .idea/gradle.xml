@@ -9,12 +9,22 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/forcedroid" />
+            <option value="$PROJECT_DIR$/forcedroid/libs" />
+            <option value="$PROJECT_DIR$/forcedroid/libs/SalesforceSDK" />
+            <option value="$PROJECT_DIR$/forcedroid/libs/SmartStore" />
+            <option value="$PROJECT_DIR$/forcedroid/libs/SmartSync" />
           </set>
         </option>
         <option name="myModules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/forcedroid" />
+            <option value="$PROJECT_DIR$/forcedroid/libs" />
+            <option value="$PROJECT_DIR$/forcedroid/libs/SalesforceSDK" />
+            <option value="$PROJECT_DIR$/forcedroid/libs/SmartStore" />
+            <option value="$PROJECT_DIR$/forcedroid/libs/SmartSync" />
           </set>
         </option>
       </GradleProjectSettings>

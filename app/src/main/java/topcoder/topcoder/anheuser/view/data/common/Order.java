@@ -9,6 +9,7 @@ import topcoder.topcoder.anheuser.view.data.main.MainTile;
  * Created by ahmadfadli on 12/27/15.
  */
 public class Order extends MainTile {
+    private String id;
     private String name;
     private String address;
     private String orderNumber;
@@ -92,6 +93,15 @@ public class Order extends MainTile {
 
     public Order setLongitude(double longitude) {
         this.longitude = longitude;
+        return this;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public Order setId(String id) {
+        this.id = id;
         return this;
     }
 }

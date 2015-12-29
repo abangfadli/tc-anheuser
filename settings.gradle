@@ -1,1 +1,1 @@
-include ':app'
+include ':app', ':forcedroid:libs:SmartSync', ':forcedroid:libs:SalesforceSDK', ':forcedroid:libs:SmartStore'

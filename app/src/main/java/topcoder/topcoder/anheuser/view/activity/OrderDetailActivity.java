@@ -10,12 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.salesforce.androidsdk.rest.RestClient;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import topcoder.topcoder.anheuser.R;
 import topcoder.topcoder.anheuser.constant.CommonConstants;
+import topcoder.topcoder.anheuser.util.ModelHandler;
+import topcoder.topcoder.anheuser.view.data.common.Order;
 import topcoder.topcoder.anheuser.view.data.common.OrderItem;
 import topcoder.topcoder.anheuser.view.data.orderdetail.OrderDetailViewData;
 
@@ -26,6 +29,8 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
     //================================================================================
     @Bind(R.id.layout_order_item)
     LinearLayout vOrderItemLayout;
+
+    boolean isDataFetched;
 
     //================================================================================
     // LIFE CYCLE
@@ -45,13 +50,21 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        generateDummy();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    public void onResume(RestClient client) {
+        super.onResume(client);
+        if(!isDataFetched) {
+            requestOrderDetail();
+            isDataFetched = true;
+        }
     }
 
     @Override
@@ -72,8 +85,15 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
     //================================================================================
     // INIT
     //================================================================================
-    protected void initState() {
+    protected void initViewState() {
         OrderDetailViewData viewData = new OrderDetailViewData();
+
+        Order order = ModelHandler.getSelectedOrder();
+        if(order == null) {
+            finish(); // Illegal
+        }
+
+        viewData.setOrder(order);
         setViewData(viewData);
     }
 
@@ -90,39 +110,30 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
 
         vOrderItemLayout.removeAllViews();
         for(int i = 0; i < mViewData.getOrder().getOrderItemList().size(); i++) {
-            OrderItemView orderItemView = new OrderItemView(this, vOrderItemLayout);
+            OrderItemViewHolder orderItemViewHolder = new OrderItemViewHolder(this, vOrderItemLayout, mViewData.getOrder().getOrderItemList().get(i));
+            vOrderItemLayout.addView(orderItemViewHolder.getRootView());
         }
     }
 
     //================================================================================
     // DUMMY DATA GENERATOR
     //================================================================================
-    private void generateDummy() {
+    private void requestOrderDetail() {
 
-        mViewData.getOrder().getOrderItemList().add(new OrderItem());
-        mViewData.getOrder().getOrderItemList().add(new OrderItem());
-        mViewData.getOrder().getOrderItemList().add(new OrderItem());
-        mViewData.getOrder().getOrderItemList().add(new OrderItem());
-        mViewData.getOrder().getOrderItemList().add(new OrderItem());
-        mViewData.getOrder().getOrderItemList().add(new OrderItem());
-        mViewData.getOrder().getOrderItemList().add(new OrderItem());
-        mViewData.getOrder().getOrderItemList().add(new OrderItem());
-        mViewData.getOrder().getOrderItemList().add(new OrderItem());
-        mViewData.getOrder().getOrderItemList().add(new OrderItem());
-        mViewData.getOrder().getOrderItemList().add(new OrderItem());
-        mViewData.getOrder().getOrderItemList().add(new OrderItem());
-        mViewData.getOrder().getOrderItemList().add(new OrderItem());
-        mViewData.getOrder().getOrderItemList().add(new OrderItem());
-        mViewData.getOrder().getOrderItemList().add(new OrderItem());
+        ModelHandler.OrderRequestor.requestOrderDetail(client, mViewData.getOrder().getId(), (order) -> {
+            mViewData.setOrder(order);
+            onViewDataChanged();
+        }, error -> {
 
-        onViewDataChanged();
+        });
     }
 
-    public class OrderItemView {
+    public class OrderItemViewHolder {
         View rootView;
+        Context context;
 
         @Bind(R.id.tv_order_item_name)
-        TextView vOrderItemTV;
+        TextView vOrderItemNameTV;
 
         @Bind(R.id.tv_order_item_qty)
         TextView vOrderItemQtyTV;
@@ -133,9 +144,19 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
         @Bind(R.id.tv_order_item_total)
         TextView vOrderItemTotalTV;
 
-        public OrderItemView(Context context, ViewGroup parent) {
-            rootView = LayoutInflater.from(context).inflate(R.layout.item_list_order_item, parent, true);
+        public OrderItemViewHolder(Context context, ViewGroup parent, OrderItem orderItem) {
+            this.context = context;
+            rootView = LayoutInflater.from(context).inflate(R.layout.item_list_order_item, parent, false);
             ButterKnife.bind(this, rootView);
+
+            init(orderItem);
+        }
+
+        private void init(OrderItem orderItem) {
+            vOrderItemNameTV.setText(orderItem.getName());
+            vOrderItemQtyTV.setText(context.getString(R.string.order_item_quantity_format, orderItem.getQuantity()));
+            vOrderItemUnitTV.setText(context.getString(R.string.order_item_unit_price_format, orderItem.getUnitPrice()));
+            vOrderItemTotalTV.setText(context.getString(R.string.order_item_total_format, orderItem.getTotalPrice()));
         }
 
         public View getRootView() {

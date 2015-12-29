@@ -1,30 +1,29 @@
 package topcoder.topcoder.anheuser.view.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.salesforce.androidsdk.rest.RestClient;
+
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import topcoder.topcoder.anheuser.R;
 import topcoder.topcoder.anheuser.constant.CommonConstants;
+import topcoder.topcoder.anheuser.model.ModelHolder;
+import topcoder.topcoder.anheuser.util.ModelHandler;
 import topcoder.topcoder.anheuser.util.ViewExpandCollapseUtil;
-import topcoder.topcoder.anheuser.view.data.main.MainTile;
-import topcoder.topcoder.anheuser.view.data.main.MainViewData;
+import topcoder.topcoder.anheuser.view.adapter.GridAdapter;
 import topcoder.topcoder.anheuser.view.data.common.Order;
+import topcoder.topcoder.anheuser.view.data.main.MainViewData;
 
 public class MainActivity extends BaseActivity<MainViewData> implements AdapterView.OnItemClickListener {
 
@@ -38,6 +37,7 @@ public class MainActivity extends BaseActivity<MainViewData> implements AdapterV
     LinearLayout vSyncProgressLayout;
 
     boolean isSyncLayoutShown;
+    boolean isDataFetched;
 
     //================================================================================
     // LIFE CYCLE
@@ -57,7 +57,19 @@ public class MainActivity extends BaseActivity<MainViewData> implements AdapterV
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        generateDummy();
+    }
+
+    @Override
+    public void onResume(RestClient client) {
+        super.onResume(client);
+
+        if(!isDataFetched) {
+            requestOrderList();
+            isDataFetched = true;
+        } else {
+            onViewDataChanged();
+        }
+
     }
 
     @Override
@@ -85,9 +97,12 @@ public class MainActivity extends BaseActivity<MainViewData> implements AdapterV
     //================================================================================
     // INIT
     //================================================================================
-    protected void initState() {
+    protected void initViewState() {
         isSyncLayoutShown = false;
-        setViewData(new MainViewData());
+
+        if(mViewData == null) {
+            setViewData(new MainViewData());
+        }
     }
 
     protected void initListener() {
@@ -121,63 +136,25 @@ public class MainActivity extends BaseActivity<MainViewData> implements AdapterV
 
     }
 
-    //================================================================================
-    // DUMMY DATA GENERATOR
-    //================================================================================
-    private void generateDummy() {
-
-        mViewData.getTileList().add(new Order());
-        mViewData.getTileList().add(new Order());
-        mViewData.getTileList().add(new Order());
-        mViewData.getTileList().add(new Order());
-        mViewData.getTileList().add(new Order());
-        mViewData.getTileList().add(new Order());
-        mViewData.getTileList().add(new Order());
-
-        onViewDataChanged();
+    private void requestOrderList() {
+        ModelHandler.OrderRequestor.requestActiveOrder(client, (titleList) -> {
+            mViewData.setTileList(titleList);
+            onViewDataChanged();
+        }, error -> {
+            Toast.makeText(this, "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
+        });
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if(parent.equals(vMainTileGV)) {
-            Intent intent = new Intent(this, OrderDetailActivity.class);
-            startActivity(intent);
-        }
-    }
-
-
-    public static class GridAdapter extends ArrayAdapter<MainTile> {
-
-        private static final int NO_PREDIFINED_LAYOUT = 0;
-        private static final int VIEW_HOLDER_TAG = 5;
-
-        private Context mContext;
-        private LayoutInflater mLayoutInflater;
-        private ViewHolder mViewHolder;
-
-        public GridAdapter (Context context, List<MainTile> provinceList) {
-            super(context, NO_PREDIFINED_LAYOUT, provinceList);
-
-            mContext = context;
-            mLayoutInflater = LayoutInflater.from(mContext);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if(convertView == null) {
-                convertView = mLayoutInflater.inflate(R.layout.item_grid_main_tile, parent, false);
-                mViewHolder = new ViewHolder();
-
-                convertView.setTag(mViewHolder);
-            } else {
-                mViewHolder = (ViewHolder)convertView.getTag();
+            Order selected = (Order)vMainTileGV.getItemAtPosition(position);
+            if(selected != null) {
+                if (ModelHandler.setSelectedOrder(selected.getId())) {
+                    Intent intent = new Intent(this, OrderDetailActivity.class);
+                    startActivity(intent);
+                }
             }
-
-            return convertView;
-        }
-
-        private class ViewHolder {
-
         }
     }
 }

@@ -4,6 +4,7 @@ package topcoder.topcoder.anheuser.view.data.common;
  * Created by ahmadfadli on 12/27/15.
  */
 public class OrderItem {
+    private String name;
     private int quantity;
     private String unitPrice;
     private String totalPrice;
@@ -32,6 +33,15 @@ public class OrderItem {
 
     public OrderItem setQuantity(int quantity) {
         this.quantity = quantity;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public OrderItem setName(String name) {
+        this.name = name;
         return this;
     }
 }

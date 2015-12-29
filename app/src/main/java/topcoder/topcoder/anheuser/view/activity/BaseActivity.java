@@ -2,11 +2,20 @@ package topcoder.topcoder.anheuser.view.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+
+import com.salesforce.androidsdk.app.SalesforceSDKManager;
+import com.salesforce.androidsdk.rest.RestClient;
+import com.salesforce.androidsdk.rest.RestRequest;
+import com.salesforce.androidsdk.rest.RestResponse;
+import com.salesforce.androidsdk.ui.SalesforceActivity;
+
+import java.io.UnsupportedEncodingException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.functions.Action1;
+import rx.functions.Action2;
 import topcoder.topcoder.anheuser.R;
 import topcoder.topcoder.anheuser.constant.CommonConstants;
 import topcoder.topcoder.anheuser.view.data.BaseViewData;
@@ -14,9 +23,9 @@ import topcoder.topcoder.anheuser.view.data.BaseViewData;
 /**
  * Created by ahmadfadli on 12/27/15.
  */
-public abstract class BaseActivity<VD extends BaseViewData> extends AppCompatActivity {
+public abstract class BaseActivity<VD extends BaseViewData> extends SalesforceActivity {
 
-    private final String TAG = this.getClass().getSimpleName();
+    protected final String TAG = this.getClass().getSimpleName();
 
 
     //================================================================================
@@ -34,6 +43,7 @@ public abstract class BaseActivity<VD extends BaseViewData> extends AppCompatAct
     //================================================================================
     // INSTANCE OBJECT
     //================================================================================
+    protected RestClient client;
     protected VD mViewData;
 
     //================================================================================
@@ -46,7 +56,7 @@ public abstract class BaseActivity<VD extends BaseViewData> extends AppCompatAct
         setContentView(mContentViewId);
         ButterKnife.bind(this);
 
-        initState();
+        initViewState();
         initListener();
     }
 
@@ -64,11 +74,21 @@ public abstract class BaseActivity<VD extends BaseViewData> extends AppCompatAct
         mLeftButtonType = CommonConstants.LeftButton.SYNC;
     }
 
-    /*---------------------------------------------------------------------
-     |  SET UPS
-     *-------------------------------------------------------------------*/
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 
-    protected abstract void initState();
+    @Override
+    public void onResume(RestClient client) {
+        this.client = client;
+    }
+
+    //================================================================================
+    // SET UPS
+    //================================================================================
+
+    protected abstract void initViewState();
     protected abstract void initListener();
 
     private void setupToolbar() {
@@ -84,14 +104,21 @@ public abstract class BaseActivity<VD extends BaseViewData> extends AppCompatAct
                     break;
             }
 
-            setSupportActionBar(vToolbar);
             vToolbar.setTitle("");
+            setSupportActionBar(vToolbar);
         }
     }
 
     protected void setViewData(VD viewData) {
         this.mViewData = viewData;
         onViewDataChanged();
+    }
+
+    //================================================================================
+    // GENERIC EVENTS
+    //================================================================================
+    public void onLogout() {
+        SalesforceSDKManager.getInstance().logout(this);
     }
 
     protected void onViewDataChanged() {
