@@ -8,11 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 import java.util.List;
 
 import butterknife.Bind;
@@ -28,7 +23,7 @@ import topcoder.topcoder.anheuser.view.data.main.Overview;
 /**
  * Created by ahmadfadli on 12/29/15.
  */
-public class GridAdapter extends ArrayAdapter<MainTile> implements OnMapReadyCallback {
+public class GridAdapter extends ArrayAdapter<MainTile> {
 
     private static final int TYPE_OVERVIEW = 0;
     private static final int TYPE_ORDER = 1;
@@ -39,7 +34,10 @@ public class GridAdapter extends ArrayAdapter<MainTile> implements OnMapReadyCal
     private Context mContext;
     private LayoutInflater mLayoutInflater;
     private MainTileViewHolder mMainTileViewHolder;
+
+    // Listener whenever the layout clicked
     private Action1<MainTile> mItemClickListener;
+    // Listener whenever the action button clicked
     private Action1<MainTile> mActionItemClickListener;
 
     public GridAdapter (Context context, List<MainTile> provinceList) {
@@ -54,6 +52,7 @@ public class GridAdapter extends ArrayAdapter<MainTile> implements OnMapReadyCal
 
         MainTile current = getItem(position);
 
+        // Basic ConvertView ViewHolder concept
         if(convertView == null) {
             if(current instanceof Order) {
                 convertView = mLayoutInflater.inflate(R.layout.item_grid_main_tile, parent, false);
@@ -70,6 +69,7 @@ public class GridAdapter extends ArrayAdapter<MainTile> implements OnMapReadyCal
             mMainTileViewHolder = (MainTileViewHolder)convertView.getTag();
         }
 
+        // Set listener
         if(current instanceof Order) {
             ((OrderViewHolder)mMainTileViewHolder).init((Order)current);
             ((OrderViewHolder) mMainTileViewHolder).vTileTitleTextView.setOnClickListener(v -> {
@@ -90,11 +90,6 @@ public class GridAdapter extends ArrayAdapter<MainTile> implements OnMapReadyCal
             ((OverviewViewHolder) mMainTileViewHolder).vTileContentLayout.setOnClickListener(v -> {
                 ActionUtil.tryCall(mItemClickListener, current);
             });
-
-
-
-
-//            ((OverviewViewHolder) mMainTileViewHolder)ActionUtil.vMapView.getMapAsync(this);
         }
 
         return convertView;
@@ -120,13 +115,6 @@ public class GridAdapter extends ArrayAdapter<MainTile> implements OnMapReadyCal
 
     public void setOnItemActionClicked(Action1<MainTile> selectedItem) {
         mActionItemClickListener = selectedItem;
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(0, 0))
-                .title("Marker"));
     }
 
     public abstract class MainTileViewHolder<T extends MainTile> {

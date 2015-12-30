@@ -15,10 +15,21 @@ import topcoder.topcoder.anheuser.view.data.main.Overview;
 
 /**
  * Created by ahmadfadli on 12/29/15.
+ *
+ * Converting ModelData object to ViewData object
+ * It is made to make the view away from parsing / keeping logic the original data structure
  */
 public class OrderConverter {
+
+    /**
+     * Convert OrderModelData to Order
+     * @param modelData
+     * @return
+     */
     public static Order convertOrder(OrderModelData modelData) {
         Order order = new Order();
+
+        // Populate all the required fields by the View
         order.setId(modelData.getId());
         order.setName(modelData.getAccount().getName());
         order.setOrderNumber(modelData.getOrderNumber());
@@ -37,6 +48,11 @@ public class OrderConverter {
         return order;
     }
 
+    /**
+     * Convert List-OrderModelData to List-Order
+     * @param modelDataList
+     * @return
+     */
     public static List<Order> convertOrder(List<OrderModelData> modelDataList) {
         List<Order> orderList = new ArrayList<>();
         for(int i = 0; i < modelDataList.size(); i++) {
@@ -47,6 +63,11 @@ public class OrderConverter {
     }
 
 
+    /**
+     * Generate additional tile for map overview (first item in MainActivity)
+     * @param orderModelDataList Existing tiles
+     * @return
+     */
     public static Overview generateMapOverviewTile(List<OrderModelData> orderModelDataList) {
         Overview mainTile = new Overview();
         for(int i = 0; i < orderModelDataList.size(); i++) {
@@ -63,6 +84,11 @@ public class OrderConverter {
         return mainTile;
     }
 
+    /**
+     * Convert OrderItemModelData to OrderItem
+     * @param modelData OrderModelData from Salesforce API
+     * @return OrderItem to be consumed by View
+     */
     public static OrderItem convertOrderItem(OrderItemModelData modelData) {
         OrderItem orderItem = new OrderItem();
         orderItem.setName(modelData.getPricebookEntry().getProduct().getName());
@@ -74,6 +100,11 @@ public class OrderConverter {
         return orderItem;
     }
 
+    /**
+     * convertOrdertem(OrderItemModelData modelData)
+     * @param modelDataList
+     * @return
+     */
     public static List<OrderItem> convertOrderItem(List<OrderItemModelData> modelDataList) {
         List<OrderItem> orderItemList = new ArrayList<>();
         for (int i = 0; i < modelDataList.size(); i++) {

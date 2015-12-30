@@ -21,10 +21,14 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -45,20 +49,31 @@ import topcoder.topcoder.anheuser.view.data.main.Overview;
 public class ModelHandler {
 
     private static Context mContext;
+
+    /**
+     * SelectedOrder to be used in OrderDetailActivity
+     */
     private static OrderModelData selectedOrder;
 
     public static void init(Context context) {
         mContext = context;
     }
 
-    protected void sendQueryRequest(RestClient client, String sql) throws UnsupportedEncodingException {
+    protected void sendQueryRequest(RestClient client, String sql) {
         sendQueryRequest(client, sql, null, null);
     }
 
-    protected void sendQueryRequest(RestClient client, String sql, Action2<RestRequest, RestResponse> onSuccess) throws UnsupportedEncodingException {
+    protected void sendQueryRequest(RestClient client, String sql, Action2<RestRequest, RestResponse> onSuccess) {
         sendQueryRequest(client, sql, onSuccess, null);
     }
 
+    /**
+     * Send QueryRequest to Salesforce Mobile SDK
+     * @param client RestClient
+     * @param soql query
+     * @param onSuccess successListener
+     * @param onError errorListener
+     */
     public static void sendQueryRequest(RestClient client, String soql, Action2<RestRequest, RestResponse> onSuccess, Action1<Exception> onError) {
         RestRequest restRequest = null;
         try {
@@ -93,6 +108,15 @@ public class ModelHandler {
         });
     }
 
+    /**
+     * Send UpsertRequest to Salesforce Mobile SDK
+     * @param client RestClient
+     * @param objectType ObjectType. Refer to Salesforce.com
+     * @param objectId Id of the object
+     * @param fields Fields to be updated
+     * @param onSuccess onSuccess listener
+     * @param onError onErrorListener
+     */
     public static void sendUpdateRequest(RestClient client, String objectType, String objectId, HashMap<String, Object> fields, Action2<RestRequest, RestResponse> onSuccess, Action1<Exception> onError) {
         RestRequest restRequest = null;
         try {
@@ -129,8 +153,18 @@ public class ModelHandler {
 
     public static class OrderRequestor {
 
+        private static final String SOUP_ORDER_NAME = "ORDER";
+
+        /**
+         * Cache the SmartStore in one app session
+         */
         private static SmartStore smartStore;
 
+        /**
+         * Lazy Load SmartStore
+         * @return SmartStore
+         *
+         */
         public static SmartStore getSmartStore() {
             if(smartStore == null) {
                 SmartStoreSDKManager sdkManager = SmartStoreSDKManager.getInstance();
@@ -139,26 +173,35 @@ public class ModelHandler {
                         new IndexSpec("Id", SmartStore.Type.string),
                         new IndexSpec("isDirtyCompleted", SmartStore.Type.string)
                 };
-                smartStore.registerSoup("ORDER", ORDER_INDEX_SPEC);
+                smartStore.registerSoup(SOUP_ORDER_NAME, ORDER_INDEX_SPEC);
             }
 
             return smartStore;
         }
 
+        /**
+         * Truncate the table and re-insert the new one
+         * @param orderModelDataList New Data
+         */
         public static void wipeAndSaveOrder(List<OrderModelData> orderModelDataList) {
             Gson gson = new Gson();
             SmartStore smartStore = getSmartStore();
-            smartStore.clearSoup("ORDER");
+            smartStore.clearSoup(SOUP_ORDER_NAME);
             for(int i = 0; i < orderModelDataList.size(); i++) {
                 try {
                     JSONObject jsonObject = new JSONObject(gson.toJson(orderModelDataList.get(i)));
-                    smartStore.upsert("ORDER", jsonObject);
+                    smartStore.upsert(SOUP_ORDER_NAME, jsonObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         }
 
+        /**
+         * Mark an Order as Complete
+         * @param id OrderId
+         * @param dirty IsDirtyCompleted
+         */
         public static void markAsComplete(String id, boolean dirty) {
             OrderModelData modelData = ModelHolder.getInstance().findOrderModelById(id);
             if(modelData == null) {
@@ -167,20 +210,30 @@ public class ModelHandler {
 
             modelData.setStatus(CommonConstant.OrderStatus.COMPLETED);
             modelData.setDirtyCompleted(dirty);
+
+            // Reflect changes to SmartStore
             updateStoredOrderData(modelData);
         }
 
+        /**
+         * Update an Order in SmartStore by specifying an OrderModel
+         * @param modelData OrderModel to be saved
+         */
         private static void updateStoredOrderData(OrderModelData modelData) {
             SmartStore smartStore = getSmartStore();
             try {
                 JSONObject jsonObject = new JSONObject(new Gson().toJson(modelData));
-                smartStore.upsert("ORDER", jsonObject, "Id");
+                smartStore.upsert(SOUP_ORDER_NAME, jsonObject, "Id");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
-
+        /**
+         * Get All Stored Order in SmartStore and convert it for View.
+         * For version without conversion @see getAllStoredOrder()
+         * @return
+         */
         public static List<MainTile> getStoredOrder() {
             List<OrderModelData> orderModelDataList = getAllStoredOrder();
             ModelHolder.getInstance().setOrderModelList(orderModelDataList);
@@ -191,7 +244,11 @@ public class ModelHandler {
             return tileList;
         }
 
-        public static List<OrderModelData> getDirtyOrderList() {
+        /**
+         * Get All Dirty existed in SmartStore
+         * @return
+         */
+        public static List<OrderModelData> getStoredDirtyOrderList() {
             List<OrderModelData> orderModelDataList = new ArrayList<>();
 
             List<OrderModelData> allOrder = getAllStoredOrder();
@@ -204,11 +261,16 @@ public class ModelHandler {
             return orderModelDataList;
         }
 
+
+        /**
+         * Get All Stored Order from SmartStore
+         * @return
+         */
         private static List<OrderModelData> getAllStoredOrder() {
             List<OrderModelData> result = new ArrayList<>();
             JSONArray jsonArray;
             try {
-                jsonArray = getSmartStore().query(QuerySpec.buildAllQuerySpec("ORDER", "Id", QuerySpec.Order.ascending, 2000), 0);
+                jsonArray = getSmartStore().query(QuerySpec.buildAllQuerySpec(SOUP_ORDER_NAME, "Id", QuerySpec.Order.ascending, 2000), 0);
                 Gson gson = new Gson();
                 result = gson.fromJson(jsonArray.toString(), new TypeToken<ArrayList<OrderModelData>>(){}.getType());
             } catch (JSONException e) {
@@ -218,6 +280,14 @@ public class ModelHandler {
             return result;
         }
 
+        /**
+         * Requesting Active Order for consumeing by View.
+         * For now, it only check the order which is not a DRAFT.
+         * Logic can be improven once the data is large enough to test multiple cases.
+         * @param client RestClient
+         * @param onSuccess onSuccess listener
+         * @param onError onFailure listener
+         */
         public static void requestActiveOrder(RestClient client, Action1<List<MainTile>> onSuccess, Action1<Exception> onError) {
             List<String> fields = Arrays.asList(
                     "Id",
@@ -229,11 +299,15 @@ public class ModelHandler {
                     "TotalAmount"
             );
             String fieldJoined = TextUtils.join(", ", fields);
+            Date date = Calendar.getInstance().getTime();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+            String dateString = simpleDateFormat.format(date);
 
-            String query = "SELECT %s From Order Where Status != 'DRAFT'";
+            String query = "SELECT %s From Order Where Status != 'DRAFT' AND Contract.EndDate = " + dateString;
             sendQueryRequest(client, String.format(query, fieldJoined), (request, response) -> {
 
                 try {
+                    // Convert to Array
                     String records = response.asJSONObject().getString("records");
                     Gson gson = new Gson();
                     List<OrderModelData> orderModelDataList = gson.fromJson(records, new TypeToken<ArrayList<OrderModelData>>(){}.getType());
@@ -254,6 +328,13 @@ public class ModelHandler {
             }, error -> ActionUtil.tryCall(onError, error));
         }
 
+        /**
+         * Requesting Order Detail of a given OrderId.
+         * @param client RestClient
+         * @param orderId orderId
+         * @param onSuccess onSuccess listener
+         * @param onError onFailure listener
+         */
         public static void requestOrderDetail(RestClient client, String orderId, Action1<Order> onSuccess, Action1<Exception> onError) {
             List<String> fields = Arrays.asList(
                     "Id",
@@ -267,11 +348,13 @@ public class ModelHandler {
             String query = "SELECT %s FROM OrderItem Where OrderId = '%s'";
             sendQueryRequest(client, String.format(query, fieldJoined, orderId), (request, response) -> {
                 try {
+                    // Get records
                     String records = response.asJSONObject().getString("records");
                     Gson gson = new Gson();
                     List<OrderItemModelData> dataModelList = gson.fromJson(records, new TypeToken<ArrayList<OrderItemModelData>>(){}.getType());
                     OrderModelData updatedModelData = ModelHolder.getInstance().setOrderItemListByOrderId(orderId, dataModelList);
 
+                    // Then update via SmartStore and Web
                     if (updatedModelData != null) {
                         updateStoredOrderData(updatedModelData);
                         ActionUtil.tryCall(onSuccess, OrderConverter.convertOrder(updatedModelData));
@@ -285,6 +368,13 @@ public class ModelHandler {
 
         }
 
+        /**
+         * Change status of an Order to Complete
+         * @param client JiraClient
+         * @param orderId orderId
+         * @param onSuccess onSuccess listener
+         * @param onError onError listner
+         */
         public static void putCompletedOrder(RestClient client, String orderId, Action0 onSuccess, Action1<Exception> onError) {
             HashMap<String, Object> fields = new HashMap<>();
             fields.put("Status", CommonConstant.OrderStatus.COMPLETED); // TODO Move hardcoded string to a specific class.
@@ -307,17 +397,29 @@ public class ModelHandler {
             });
         }
 
+        /**
+         * Helper method to return current Order stored in ModelHolder
+         * @return
+         */
         public static List<Order> getOrderList() {
             return OrderConverter.convertOrder(ModelHolder.getInstance().getOrderModelList());
         }
 
         public static int totalUpdatedOrder;
 
+        /**
+         * Try to update dirty in Order
+         * @param client JiraClient
+         * @param onSuccess
+         * @param onError
+         */
         public static void updateDirtyOrder(RestClient client, Action1<Integer> onSuccess, Action1<Exception> onError) {
-            List<OrderModelData> dirtyOrderList = getDirtyOrderList();
+            // Get orderList
+            List<OrderModelData> dirtyOrderList = getStoredDirtyOrderList();
             totalUpdatedOrder = 0;
             if(dirtyOrderList.size() > 0) {
                 for(int i = 0; i < dirtyOrderList.size(); i++) {
+                    // For each, run upsert API
                     OrderModelData orderModelData = dirtyOrderList.get(i);
                     putCompletedOrder(client, orderModelData.getId(), () -> {
                         orderModelData.setDirtyCompleted(false);
@@ -336,11 +438,6 @@ public class ModelHandler {
     }
 
     public static class OverviewRequestor {
-        public static Overview getOverviewFromExistingOrder() {
-            List<OrderModelData> orderList = ModelHolder.getInstance().getOrderModelList();
-            return getOverviewFromOrder(orderList);
-        }
-
         public static Overview getOverviewFromOrder(List<OrderModelData> orderList) {
             return OrderConverter.generateMapOverviewTile(orderList);
         }

@@ -11,6 +11,8 @@ import rx.functions.Action2;
 
 /**
  * Created by ahmadfadli on 12/29/15.
+ *
+ * Wrapper for calling callbacks just to check if null
  */
 public class ActionUtil {
     public static void tryCall(Action0 action) {

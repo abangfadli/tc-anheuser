@@ -88,12 +88,12 @@
         "source": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.1/res/drawable-xhdpi/abc_ic_search_api_mtrl_alpha.png"
     },
     {
-        "merged": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/build/intermediates/res/merged/release/drawable-xhdpi-v4/abc_popup_background_mtrl_mult.9.png",
-        "source": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.1/res/drawable-xhdpi/abc_popup_background_mtrl_mult.9.png"
-    },
-    {
         "merged": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/build/intermediates/res/merged/release/drawable-xhdpi-v4/abc_tab_indicator_mtrl_alpha.9.png",
         "source": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.1/res/drawable-xhdpi/abc_tab_indicator_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/build/intermediates/res/merged/release/drawable-xhdpi-v4/abc_popup_background_mtrl_mult.9.png",
+        "source": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.1/res/drawable-xhdpi/abc_popup_background_mtrl_mult.9.png"
     },
     {
         "merged": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/build/intermediates/res/merged/release/drawable-xhdpi-v4/abc_btn_radio_to_on_mtrl_000.png",

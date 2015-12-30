@@ -16,13 +16,14 @@
         android:gravity="center"
         android:orientation="vertical"
         tools:showIn="@layout/content_main"
-        android:background="@color/gray_500"
+        android:background="@color/gray_300"
         android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/main_sync_progress" />
+            android:text="@string/main_sync_progress"
+            android:textSize="@dimen/text_size_title"/>
 
         <ImageView
             android:layout_width="wrap_content"

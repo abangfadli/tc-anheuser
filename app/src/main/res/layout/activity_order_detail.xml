@@ -36,14 +36,14 @@
                     android:id="@+id/tv_order_account_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="28sp"
+                    android:textSize="@dimen/text_size_title"
                     android:text="@string/sample_account_name"/>
 
                 <TextView
                     android:id="@+id/tv_order_account_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
+                    android:textSize="@dimen/text_size_normal"
                     android:text="@string/sample_account_address"/>
 
                 <Space
@@ -54,14 +54,14 @@
                     android:id="@+id/tv_order_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
+                    android:textSize="@dimen/text_size_normal"
                     android:text="@string/sample_order_number"/>
 
                 <TextView
                     android:id="@+id/tv_order_total"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
+                    android:textSize="@dimen/text_size_normal"
                     android:text="@string/sample_order_total"/>
 
             </LinearLayout>

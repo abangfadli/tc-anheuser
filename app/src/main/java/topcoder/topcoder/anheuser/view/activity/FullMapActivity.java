@@ -1,6 +1,8 @@
 package topcoder.topcoder.anheuser.view.activity;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Menu;
@@ -16,6 +18,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.salesforce.androidsdk.rest.RestClient;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,11 +63,6 @@ public class FullMapActivity extends BaseActivity<FullMapViewData> implements On
     }
 
     @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-    }
-
-    @Override
     public void onResume(RestClient client) {
         super.onResume(client);
     }
@@ -103,21 +101,6 @@ public class FullMapActivity extends BaseActivity<FullMapViewData> implements On
     }
 
     //================================================================================
-    // LISTENER
-    //================================================================================
-
-    private Action1<MainTile> itemActionButtonClicked = mainTile -> {
-        if(mainTile instanceof Order) {
-
-            double lat = -6.9932000;
-            double lng = 110.4203000;
-            String label = ((Order) mainTile).getName();
-
-            MapUtil.launchMaps(this, lat, lng, label);
-        }
-    };
-
-    //================================================================================
     // VIEW DATA ORGANIZER
     //================================================================================
     @Override
@@ -132,24 +115,48 @@ public class FullMapActivity extends BaseActivity<FullMapViewData> implements On
         updateMap();
     }
 
+    /**
+     * Updating Map.
+     * Inserting Markers based on each Order.
+     */
     private void updateMap() {
+        // If viewData is not ready, or GoogleMap is not ready, return
         if(mViewData == null || mGoogleMap == null || mViewData.getOrderList().size() == 0) {
             return;
         }
 
         markerList = new ArrayList<>();
 
+        // Add Marker
         for(int i = 0; i < mViewData.getOrderList().size(); i++) {
             Order order = mViewData.getOrderList().get(i);
 
+            Geocoder geocoder = new Geocoder(this);
+            List<Address> addresses = new ArrayList<>();
+            if (mViewData.getOrderList().get(i).getAddress() != null) {
+                try {
+                    addresses = geocoder.getFromLocationName(mViewData.getOrderList().get(i).getAddress(), 2);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            double latitude = order.getLatitude();
+            double longitude = order.getLongitude();
+            if(addresses.size() > 0) {
+                latitude = addresses.get(0).getLatitude();
+                longitude = addresses.get(0).getLongitude();
+            }
+
             Marker marker = mGoogleMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(order.getLatitude(), order.getLongitude()))
+                    .position(new LatLng(latitude, longitude))
                     .title(order.getName()));
 
             marker.showInfoWindow();
             markerList.add(marker);
         }
 
+        // Set Marker OnClickListener
         mGoogleMap.setOnMarkerClickListener(marker -> {
             int index = markerList.indexOf(marker);
             if(index != -1) {
@@ -161,6 +168,7 @@ public class FullMapActivity extends BaseActivity<FullMapViewData> implements On
             return false;
         });
 
+        // Update Map Position to cover all the markers in one screen
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for (Marker marker : markerList) {
             builder.include(marker.getPosition());

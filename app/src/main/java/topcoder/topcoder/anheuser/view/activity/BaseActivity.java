@@ -1,6 +1,7 @@
 package topcoder.topcoder.anheuser.view.activity;
 
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
@@ -27,7 +28,11 @@ public abstract class BaseActivity<VD extends BaseViewData> extends SalesforceAc
     //================================================================================
     // ACTIVITY PROPERTIES
     //================================================================================
+
+    @LayoutRes
     protected int mContentViewId;
+
+    @CommonConstant.LeftButtonType
     protected int mLeftButtonType;
 
     //================================================================================
@@ -48,6 +53,8 @@ public abstract class BaseActivity<VD extends BaseViewData> extends SalesforceAc
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Adjust properties of the activity (layout, back button type, etc)
         onAdjustProperties();
         setContentView(mContentViewId);
         ButterKnife.bind(this);
@@ -63,7 +70,9 @@ public abstract class BaseActivity<VD extends BaseViewData> extends SalesforceAc
         setupToolbar();
     }
 
-
+    /**
+     * Set the properties of the activity (ContentView layout resId, back button type, etc)
+     */
     protected void onAdjustProperties() {
         // Default State
         mContentViewId = R.layout.activity_main;
@@ -83,8 +92,9 @@ public abstract class BaseActivity<VD extends BaseViewData> extends SalesforceAc
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() != android.R.id.home) {
-            Snackbar snackbar =  Snackbar.make(vToolbar, "Not implemented yet", Snackbar.LENGTH_SHORT);
-            snackbar.setAction("Close", v -> {
+            // Two buttons in app bar is not implemented yet
+            Snackbar snackbar =  Snackbar.make(vToolbar, R.string.message_not_implemented, Snackbar.LENGTH_SHORT);
+            snackbar.setAction(R.string.text_close, v -> {
                 snackbar.dismiss();
             });
             snackbar.show();
@@ -96,9 +106,19 @@ public abstract class BaseActivity<VD extends BaseViewData> extends SalesforceAc
     // SET UPS
     //================================================================================
 
+    /**
+     * Init View State (default state, visibility, variables of an activity screen
+     */
     protected abstract void initViewState();
+
+    /**
+     * Init listener between view and activitiy
+     */
     protected abstract void initListener();
 
+    /**
+     * Setup top left button and icon in toolbar
+     */
     private void setupToolbar() {
         if(vToolbar != null) {
             switch (mLeftButtonType) {
@@ -117,6 +137,10 @@ public abstract class BaseActivity<VD extends BaseViewData> extends SalesforceAc
         }
     }
 
+    /**
+     * Set ViewData binded with the Activity.
+     * @param viewData the binded object
+     */
     protected void setViewData(VD viewData) {
         this.mViewData = viewData;
         onViewDataChanged();
@@ -129,7 +153,11 @@ public abstract class BaseActivity<VD extends BaseViewData> extends SalesforceAc
         SalesforceSDKManager.getInstance().logout(this);
     }
 
+
+    /**
+     * Would be overridden with each Activity to implement changes whenever ViewData changed/replaced
+     */
     protected void onViewDataChanged() {
-        // Implement if needed
+
     }
 }

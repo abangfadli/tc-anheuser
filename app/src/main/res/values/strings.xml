@@ -31,4 +31,12 @@
     <string name="sample_order_item_total">Total Price: $8,8888.88</string>
     <string name="message_no_connection">Check your internet connection and try again.</string>
     <string name="message_server_error">Error occured in server. Please try again later.</string>
+    <string name="message_not_implemented">Not implemented yet</string>
+    <string name="text_close">Close</string>
+    <string name="message_sync_back">Have been saved back to Salesforce</string>
+    <string name="text_ok">OK</string>
+    <string name="message_order_loaded">Order data reloaded succesfully</string>
+    <string name="text_saving">Saving</string>
+    <string name="text_please_wait">Please Wait...</string>
+    <string name="message_offline_dirty_sync">You are offline.\nStatus will be synced with Salesforce in the next sync.</string>
 </resources>

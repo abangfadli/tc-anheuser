@@ -52,8 +52,10 @@ public class MainActivity extends BaseActivity<MainViewData> {
 
     GridAdapter gridAdapter;
 
+    /**
+     * Flag for full reloading event i.e FullSync (update dirty and reload list from SDK)
+     */
     boolean isReloading;
-    boolean isSyncingDirty;
     boolean isDataFetched;
 
     //================================================================================
@@ -67,27 +69,23 @@ public class MainActivity extends BaseActivity<MainViewData> {
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-    }
-
-    @Override
     public void onResume(RestClient client) {
         super.onResume(client);
+        // Load cached data to support offline
         loadCachedData();
 
         if(!isDataFetched) {
+            // Check if user already open the app that day.
+            // If yes, then do nothing
+            // Else, trigger full Sync
+
             StandardPrefManager prefManager = new StandardPrefManager(this);
             String lastOpened = prefManager.getString(PrefConstant.LAST_OPENED_DATE_KEY, null);
             Date date = Calendar.getInstance().getTime();
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
             String currentDate = sdf.format(date);
 
+            // If day is not same
             if (!currentDate.equals(lastOpened)) {
                 trySync(true);
             }
@@ -95,8 +93,8 @@ public class MainActivity extends BaseActivity<MainViewData> {
             prefManager.writeString(PrefConstant.LAST_OPENED_DATE_KEY, currentDate);
         }
 
+        // Only trigger DirtyCompletedOrder instead of FullSync
         updateDirtyOrder(false);
-
     }
 
     @Override
@@ -123,6 +121,10 @@ public class MainActivity extends BaseActivity<MainViewData> {
     //================================================================================
     // INIT
     //================================================================================
+
+    /**
+     * Init the initial condition of a View
+     */
     protected void initViewState() {
         isReloading = false;
 
@@ -147,8 +149,12 @@ public class MainActivity extends BaseActivity<MainViewData> {
     //================================================================================
     // LISTENER
     //================================================================================
+    /**
+     * ItemClick when an item clicked. Invoked by GridAdapter.
+     */
     private Action1<MainTile> itemClickListener = mainTile -> {
         if (mainTile instanceof Order) {
+            // Set selected Order to become usable in next Activity
             if (ModelHandler.setSelectedOrder(((Order)mainTile).getId())) {
                 Intent intent = new Intent(this, OrderDetailActivity.class);
                 startActivity(intent);
@@ -159,6 +165,9 @@ public class MainActivity extends BaseActivity<MainViewData> {
         }
     };
 
+    /**
+     * ActionItemClick. Typically only happens in Order Tile. Not Overview Tile.
+     */
     private Action1<MainTile> itemActionButtonClicked = mainTile -> {
         if(mainTile instanceof Order) {
 
@@ -166,7 +175,7 @@ public class MainActivity extends BaseActivity<MainViewData> {
             double lng = ((Order) mainTile).getLongitude();
             String label = ((Order) mainTile).getName();
 
-            MapUtil.launchMaps(this, lat, lng, label);
+            MapUtil.launchMapsAddress(this, lat, lng, ((Order) mainTile).getAddress());
         }
     };
 
@@ -183,6 +192,10 @@ public class MainActivity extends BaseActivity<MainViewData> {
         }
     }
 
+    /**
+     * Do Sync to Salesforce SDK
+     * @param forceRefresh if set to true then still refresh even if the Activity already have data stored
+     */
     private void trySync(boolean forceRefresh) {
         if(!isDataFetched || forceRefresh) {
             if(isReloading) {
@@ -191,6 +204,7 @@ public class MainActivity extends BaseActivity<MainViewData> {
                 ViewExpandCollapseUtil.animateExpanding(vSyncProgressLayout);
                 isReloading = true;
 
+                // Run DirtyOrderCompleted with reloading the list
                 updateDirtyOrder(true);
 
                 isDataFetched = true;
@@ -200,52 +214,59 @@ public class MainActivity extends BaseActivity<MainViewData> {
         }
     }
 
+    /**
+     * Update the DirtyOrderCompleted
+     * @param needReload if set to true then it'll automatically continue to reloading the list.
+     */
     private void updateDirtyOrder(boolean needReload) {
-        // Check for internet connection
-        // Read from SmartStore -> Check if there's any dirty order
-        //  yes -> Update it first -> notify user
-        // Update order list
-
-        if(!isSyncingDirty) {
-            ModelHandler.OrderRequestor.updateDirtyOrder(client, (total) -> {
-                if(total > 0) {
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-                    alertDialogBuilder.setTitle(total + " Completed Order(s)");
-                    alertDialogBuilder.setMessage("Have been saved back to Salesforce");
-                    alertDialogBuilder.setOnDismissListener(dialog -> {
-                        if(needReload) {
-                            requestOrderList();
-                        }
-                    });
-                    alertDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
-
-                    });
-                    alertDialogBuilder.show();
-                } else {
+        ModelHandler.OrderRequestor.updateDirtyOrder(client, (total) -> {
+            if(total > 0) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setTitle(total + " Completed Order(s)");
+                alertDialogBuilder.setMessage(getString(R.string.message_sync_back));
+                alertDialogBuilder.setOnDismissListener(dialog -> {
                     if(needReload) {
                         requestOrderList();
                     }
-                }
-            }, (error) -> {
-                if(needReload) {
-                    ViewExpandCollapseUtil.animateCollapsing(vSyncProgressLayout);
-                    isReloading = false;
+                });
+                alertDialogBuilder.setPositiveButton(getString(R.string.text_ok), (dialog, which) -> {
 
-                    showErrorMessage(error);
+                });
+                alertDialogBuilder.show();
+            } else {
+                if(needReload) {
+                    requestOrderList();
                 }
-            });
-        }
+            }
+        }, (error) -> {
+            if(needReload) {
+                ViewExpandCollapseUtil.animateCollapsing(vSyncProgressLayout);
+                isReloading = false;
+
+                showErrorMessage(error);
+            }
+        });
     }
 
+    /**
+     * Load the Order data stored in SmartStore
+     */
     private void loadCachedData() {
         mViewData.setTileList(ModelHandler.OrderRequestor.getStoredOrder());
         onViewDataChanged();
     }
 
+    /**
+     * Reload the list (Request new data)
+     */
     private void requestOrderList() {
+        // Mark start time
         long startTime = System.currentTimeMillis();
 
         ModelHandler.OrderRequestor.requestActiveOrder(client, (titleList) -> {
+
+            // If loading time is < 3 seconds then show the loading animation for 3 seconds.
+            // On a very fast internet connection, it'll make the UI ugly because the layout appear and then immediately dissapeared
             long diff = MINIMUM_LOADING_TIME - (System.currentTimeMillis() - startTime);
             diff = (diff < 0 ? 0 : diff);
 
@@ -256,7 +277,7 @@ public class MainActivity extends BaseActivity<MainViewData> {
                 mViewData.setTileList(titleList);
                 onViewDataChanged();
 
-                Snackbar.make(vMainTileGV, "Order data updated", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(vMainTileGV, R.string.message_order_loaded, Snackbar.LENGTH_SHORT).show();
             }, diff);
 
         }, error -> {
@@ -267,6 +288,10 @@ public class MainActivity extends BaseActivity<MainViewData> {
         });
     }
 
+    /**
+     * Show Snackbar based on error type
+     * @param error
+     */
     private void showErrorMessage(Exception error) {
         String message = error.getMessage();
 

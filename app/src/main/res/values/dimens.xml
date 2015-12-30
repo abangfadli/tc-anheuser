@@ -7,12 +7,13 @@
     <dimen name="app_bar_height">220dp</dimen>
     <dimen name="narrow_margin">4dp</dimen>
     <dimen name="medium_margin">8dp</dimen>
+    <dimen name="medium_ten_margin">10dp</dimen>
 
-    <dimen name="text_size_headline">30sp</dimen>
-    <dimen name="text_size_big_title">28sp</dimen>
+    <dimen name="text_size_headline">34sp</dimen>
+    <dimen name="text_size_big_title">30sp</dimen>
     <dimen name="text_size_title">26sp</dimen>
-    <dimen name="text_size_subtitle">24sp</dimen>
-    <dimen name="text_size_normal">20sp</dimen>
-    <dimen name="text_size_accent">18sp</dimen>
+    <dimen name="text_size_subtitle">22sp</dimen>
+    <dimen name="text_size_normal">18sp</dimen>
+    <dimen name="text_size_accent">16sp</dimen>
     <dimen name="text_size_small">14sp</dimen>
 </resources>

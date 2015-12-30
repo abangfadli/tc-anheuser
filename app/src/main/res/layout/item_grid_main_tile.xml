@@ -6,13 +6,15 @@
     android:layout_height="250dp"
     tools:context=".view.activity.MainActivity"
     android:orientation="vertical"
+    android:paddingLeft="1dp"
+    android:paddingRight="1dp"
     android:background="@drawable/background_with_shadow">
 
     <LinearLayout
         android:id="@+id/layout_tile_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
+        android:layout_weight="5"
         android:padding="12dp"
         android:orientation="vertical">
 
@@ -20,17 +22,22 @@
             android:id="@+id/tv_order_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="28sp"
+            android:textSize="@dimen/text_size_title"
             android:text="@string/sample_account_name"/>
 
         <TextView
             android:id="@+id/tv_order_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:textSize="@dimen/text_size_normal"
             android:text="@string/sample_account_address"/>
 
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@drawable/horizontal_line_separator_white"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -44,6 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:textAllCaps="true"
+            android:textSize="@dimen/text_size_small"
             android:text="@string/view_order" />
 
         <ImageView

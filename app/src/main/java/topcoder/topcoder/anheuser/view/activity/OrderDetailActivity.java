@@ -69,16 +69,6 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
@@ -87,6 +77,8 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
     @Override
     public void onResume(RestClient client) {
         super.onResume(client);
+
+        // If data not fetched yet, request detail of the order
         if(!isDataFetched) {
             requestOrderDetail();
             isDataFetched = true;
@@ -112,6 +104,7 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
     // INIT
     //================================================================================
     protected void initViewState() {
+        // Obtain the Order object that's previously stored in ModelHandler
         OrderDetailViewData viewData = new OrderDetailViewData();
 
         Order order = ModelHandler.getSelectedOrder();
@@ -124,21 +117,25 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
     }
 
     protected void initListener() {
+        // Complete Button
         vOrderCompleteBtn.setOnClickListener(v -> {
             if(!CommonConstant.OrderStatus.isCompleted(mViewData.getOrder().getStatus())) {
 
-                ProgressDialog progressDialog = ProgressDialog.show(this, "Saving", "Please Wait...", true, false);
+                // Show LoadingDialog
+                ProgressDialog progressDialog = ProgressDialog.show(this, getString(R.string.text_saving), getString(R.string.text_please_wait), true, false);
                 progressDialog.show();
 
                 ModelHandler.OrderRequestor.putCompletedOrder(client, mViewData.getOrder().getId(), () -> {
+                    // Hide LoadingDialog
                     progressDialog.hide();
                     onBackPressed();
                 }, (error) -> {
+                    // Error when marking as complete. Set it to dirty and update next time syncing.
                     progressDialog.hide();
                     String message = error.getMessage();
-                    message = "You are offline.\nStatus will be synced with Salesforce in the next sync.";
+                    message = getString(R.string.message_offline_dirty_sync);
 
-                    Snackbar snackbar = Snackbar.make(vAccountNameTV, message, Snackbar.LENGTH_INDEFINITE).setAction("OK", (view) -> {
+                    Snackbar snackbar = Snackbar.make(vAccountNameTV, message, Snackbar.LENGTH_INDEFINITE).setAction(R.string.text_ok, (view) -> {
                         onViewDataChanged();
                     });
 
@@ -151,13 +148,14 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
             }
         });
 
+        // Open maps of current Order.
         vLocationFAB.setOnClickListener(v -> {
             if(mViewData.getOrder() != null) {
                 double lat = mViewData.getOrder().getLatitude();
                 double lng = mViewData.getOrder().getLongitude();
                 String label = mViewData.getOrder().getName();
 
-                MapUtil.launchMaps(this, lat, lng, label);
+                MapUtil.launchMapsAddress(this, lat, lng, mViewData.getOrder().getAddress());
             }
         });
     }
@@ -190,9 +188,9 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
         }
     }
 
-    //================================================================================
-    // DUMMY DATA GENERATOR
-    //================================================================================
+    /**
+     * Request Order Items to SDK
+     */
     private void requestOrderDetail() {
 
         ModelHandler.OrderRequestor.requestOrderDetail(client, mViewData.getOrder().getId(), (order) -> {
@@ -213,6 +211,9 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
         Snackbar.make(vAccountNameTV, message, Snackbar.LENGTH_LONG).show();
     }
 
+    /**
+     * ViewHolder of each ProductItem
+     */
     public class OrderItemViewHolder {
         View rootView;
         Context context;

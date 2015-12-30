@@ -8,6 +8,14 @@ import java.util.Locale;
  * Created by ahmadfadli on 12/29/15.
  */
 public class CurrencyUtil {
+
+    /**
+     * Convert an amount to a currency in a locale
+     * @param currency
+     * @param locale
+     * @param amount
+     * @return String of formatted amount
+     */
     public static String formatCurrency(String currency, Locale locale, double amount) {
 
         DecimalFormat decimalFormat;

@@ -8,6 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Created by ahmadfadli on 12/27/15.
+ * Contains enum-like variable
  */
 public class CommonConstant {
 
