@@ -8,12 +8,12 @@
         "source": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SalesforceSDK/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.1/res/drawable/abc_switch_thumb_material.xml"
     },
     {
-        "merged": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SalesforceSDK/build/intermediates/res/merged/release/drawable/sf__progress_spinner.xml",
-        "source": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SalesforceSDK/res/drawable/sf__progress_spinner.xml"
-    },
-    {
         "merged": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SalesforceSDK/build/intermediates/res/merged/release/drawable/abc_item_background_holo_dark.xml",
         "source": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SalesforceSDK/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.1/res/drawable/abc_item_background_holo_dark.xml"
+    },
+    {
+        "merged": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SalesforceSDK/build/intermediates/res/merged/release/drawable/sf__progress_spinner.xml",
+        "source": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SalesforceSDK/res/drawable/sf__progress_spinner.xml"
     },
     {
         "merged": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SalesforceSDK/build/intermediates/res/merged/release/drawable/abc_spinner_textfield_background_material.xml",

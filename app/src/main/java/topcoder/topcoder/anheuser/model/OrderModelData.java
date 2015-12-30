@@ -21,6 +21,7 @@ public class OrderModelData extends BaseModelData {
     @SerializedName("TotalAmount")
     private double totalAmount;
 
+    @SerializedName("isDirtyCompleted")
     private boolean isDirtyCompleted;
 
     private List<OrderItemModelData> orderItemList;

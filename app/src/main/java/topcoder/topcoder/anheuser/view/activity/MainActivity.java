@@ -1,34 +1,36 @@
 package topcoder.topcoder.anheuser.view.activity;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.android.volley.NoConnectionError;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.salesforce.androidsdk.rest.RestClient;
 
-import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import butterknife.Bind;
 import rx.functions.Action1;
 import topcoder.topcoder.anheuser.R;
-import topcoder.topcoder.anheuser.constant.CommonConstants;
+import topcoder.topcoder.anheuser.constant.CommonConstant;
+import topcoder.topcoder.anheuser.constant.PrefConstant;
 import topcoder.topcoder.anheuser.util.MapUtil;
 import topcoder.topcoder.anheuser.util.ModelHandler;
 import topcoder.topcoder.anheuser.util.ViewExpandCollapseUtil;
+import topcoder.topcoder.anheuser.util.pref.StandardPrefManager;
 import topcoder.topcoder.anheuser.view.adapter.GridAdapter;
 import topcoder.topcoder.anheuser.view.data.common.Order;
 import topcoder.topcoder.anheuser.view.data.main.MainTile;
@@ -50,7 +52,8 @@ public class MainActivity extends BaseActivity<MainViewData> {
 
     GridAdapter gridAdapter;
 
-    boolean isSyncLayoutShown;
+    boolean isReloading;
+    boolean isSyncingDirty;
     boolean isDataFetched;
 
     //================================================================================
@@ -60,7 +63,7 @@ public class MainActivity extends BaseActivity<MainViewData> {
     protected void onAdjustProperties() {
         super.onAdjustProperties();
         mContentViewId = R.layout.activity_main;
-        mLeftButtonType = CommonConstants.LeftButton.SYNC;
+        mLeftButtonType = CommonConstant.LeftButton.SYNC;
     }
 
     @Override
@@ -77,7 +80,23 @@ public class MainActivity extends BaseActivity<MainViewData> {
     public void onResume(RestClient client) {
         super.onResume(client);
         loadCachedData();
-        trySync(false);
+
+        if(!isDataFetched) {
+            StandardPrefManager prefManager = new StandardPrefManager(this);
+            String lastOpened = prefManager.getString(PrefConstant.LAST_OPENED_DATE_KEY, null);
+            Date date = Calendar.getInstance().getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+            String currentDate = sdf.format(date);
+
+            if (!currentDate.equals(lastOpened)) {
+                trySync(true);
+            }
+
+            prefManager.writeString(PrefConstant.LAST_OPENED_DATE_KEY, currentDate);
+        }
+
+        updateDirtyOrder(false);
+
     }
 
     @Override
@@ -105,7 +124,7 @@ public class MainActivity extends BaseActivity<MainViewData> {
     // INIT
     //================================================================================
     protected void initViewState() {
-        isSyncLayoutShown = false;
+        isReloading = false;
 
         if(mViewData == null) {
             setViewData(new MainViewData());
@@ -166,22 +185,55 @@ public class MainActivity extends BaseActivity<MainViewData> {
 
     private void trySync(boolean forceRefresh) {
         if(!isDataFetched || forceRefresh) {
-            if(isSyncLayoutShown) {
+            if(isReloading) {
                 // Do nothing.
             } else {
                 ViewExpandCollapseUtil.animateExpanding(vSyncProgressLayout);
-                isSyncLayoutShown = true;
+                isReloading = true;
 
-                // Check for internet connection
-                // Read from SmartStore -> Check if there's any dirty order
-                //  yes -> Update it first -> notify user
-                // Update order list
+                updateDirtyOrder(true);
 
-                requestOrderList();
                 isDataFetched = true;
             }
         } else {
             onViewDataChanged();
+        }
+    }
+
+    private void updateDirtyOrder(boolean needReload) {
+        // Check for internet connection
+        // Read from SmartStore -> Check if there's any dirty order
+        //  yes -> Update it first -> notify user
+        // Update order list
+
+        if(!isSyncingDirty) {
+            ModelHandler.OrderRequestor.updateDirtyOrder(client, (total) -> {
+                if(total > 0) {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                    alertDialogBuilder.setTitle(total + " Completed Order(s)");
+                    alertDialogBuilder.setMessage("Have been saved back to Salesforce");
+                    alertDialogBuilder.setOnDismissListener(dialog -> {
+                        if(needReload) {
+                            requestOrderList();
+                        }
+                    });
+                    alertDialogBuilder.setPositiveButton("OK", (dialog, which) -> {
+
+                    });
+                    alertDialogBuilder.show();
+                } else {
+                    if(needReload) {
+                        requestOrderList();
+                    }
+                }
+            }, (error) -> {
+                if(needReload) {
+                    ViewExpandCollapseUtil.animateCollapsing(vSyncProgressLayout);
+                    isReloading = false;
+
+                    showErrorMessage(error);
+                }
+            });
         }
     }
 
@@ -199,7 +251,7 @@ public class MainActivity extends BaseActivity<MainViewData> {
 
             new Handler().postDelayed(() -> {
                 ViewExpandCollapseUtil.animateCollapsing(vSyncProgressLayout);
-                isSyncLayoutShown = false;
+                isReloading = false;
 
                 mViewData.setTileList(titleList);
                 onViewDataChanged();
@@ -209,17 +261,21 @@ public class MainActivity extends BaseActivity<MainViewData> {
 
         }, error -> {
             ViewExpandCollapseUtil.animateCollapsing(vSyncProgressLayout);
-            isSyncLayoutShown = false;
+            isReloading = false;
 
-            String message = error.getMessage();
-
-            if (error instanceof NoConnectionError) {
-                message = getString(R.string.message_no_connection);
-            } else if(error instanceof ServerError || error instanceof TimeoutError) {
-                message = getString(R.string.message_server_error);
-            }
-
-            Snackbar.make(vMainTileGV, message, Snackbar.LENGTH_LONG).show();
+            showErrorMessage(error);
         });
+    }
+
+    private void showErrorMessage(Exception error) {
+        String message = error.getMessage();
+
+        if (error instanceof NoConnectionError) {
+            message = getString(R.string.message_no_connection);
+        } else if(error instanceof ServerError || error instanceof TimeoutError) {
+            message = getString(R.string.message_server_error);
+        }
+
+        Snackbar.make(vMainTileGV, message, Snackbar.LENGTH_LONG).show();
     }
 }

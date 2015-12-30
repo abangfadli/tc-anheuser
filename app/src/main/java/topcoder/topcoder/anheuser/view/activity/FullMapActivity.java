@@ -2,15 +2,10 @@ package topcoder.topcoder.anheuser.view.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.GridView;
-import android.widget.LinearLayout;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -24,22 +19,14 @@ import com.salesforce.androidsdk.rest.RestClient;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
 import rx.functions.Action1;
 import topcoder.topcoder.anheuser.R;
-import topcoder.topcoder.anheuser.constant.CommonConstants;
-import topcoder.topcoder.anheuser.model.ModelHolder;
+import topcoder.topcoder.anheuser.constant.CommonConstant;
 import topcoder.topcoder.anheuser.util.MapUtil;
 import topcoder.topcoder.anheuser.util.ModelHandler;
-import topcoder.topcoder.anheuser.util.ViewExpandCollapseUtil;
-import topcoder.topcoder.anheuser.view.adapter.GridAdapter;
-import topcoder.topcoder.anheuser.view.data.common.Coordinate;
 import topcoder.topcoder.anheuser.view.data.common.Order;
 import topcoder.topcoder.anheuser.view.data.fullmap.FullMapViewData;
 import topcoder.topcoder.anheuser.view.data.main.MainTile;
-import topcoder.topcoder.anheuser.view.data.main.MainViewData;
-import topcoder.topcoder.anheuser.view.data.main.Overview;
-import topcoder.topcoder.anheuser.view.data.orderdetail.OrderDetailViewData;
 
 public class FullMapActivity extends BaseActivity<FullMapViewData> implements OnMapReadyCallback {
 
@@ -59,7 +46,7 @@ public class FullMapActivity extends BaseActivity<FullMapViewData> implements On
     protected void onAdjustProperties() {
         super.onAdjustProperties();
         mContentViewId = R.layout.activity_full_map;
-        mLeftButtonType = CommonConstants.LeftButton.BACK;
+        mLeftButtonType = CommonConstant.LeftButton.BACK;
     }
 
     @Override

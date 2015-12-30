@@ -1,5 +1,6 @@
 package topcoder.topcoder.anheuser.view.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,7 +23,7 @@ import com.salesforce.androidsdk.rest.RestClient;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import topcoder.topcoder.anheuser.R;
-import topcoder.topcoder.anheuser.constant.CommonConstants;
+import topcoder.topcoder.anheuser.constant.CommonConstant;
 import topcoder.topcoder.anheuser.util.MapUtil;
 import topcoder.topcoder.anheuser.util.ModelHandler;
 import topcoder.topcoder.anheuser.view.data.common.Order;
@@ -64,7 +65,7 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
     protected void onAdjustProperties() {
         super.onAdjustProperties();
         mContentViewId = R.layout.activity_order_detail;
-        mLeftButtonType = CommonConstants.LeftButton.BACK;
+        mLeftButtonType = CommonConstant.LeftButton.BACK;
     }
 
     @Override
@@ -124,11 +125,28 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
 
     protected void initListener() {
         vOrderCompleteBtn.setOnClickListener(v -> {
-            if(!CommonConstants.OrderStatus.isCompleted(mViewData.getOrder().getStatus())) {
+            if(!CommonConstant.OrderStatus.isCompleted(mViewData.getOrder().getStatus())) {
+
+                ProgressDialog progressDialog = ProgressDialog.show(this, "Saving", "Please Wait...", true, false);
+                progressDialog.show();
+
                 ModelHandler.OrderRequestor.putCompletedOrder(client, mViewData.getOrder().getId(), () -> {
+                    progressDialog.hide();
+                    onBackPressed();
+                }, (error) -> {
+                    progressDialog.hide();
+                    String message = error.getMessage();
+                    message = "You are offline.\nStatus will be synced with Salesforce in the next sync.";
 
-                }, error -> {
+                    Snackbar snackbar = Snackbar.make(vAccountNameTV, message, Snackbar.LENGTH_INDEFINITE).setAction("OK", (view) -> {
+                        onViewDataChanged();
+                    });
 
+                    View snackbarView = snackbar.getView();
+                    TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                    textView.setMaxLines(5);
+
+                    snackbar.show();
                 });
             }
         });
@@ -163,7 +181,7 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
         }
 
 
-        if(!CommonConstants.OrderStatus.isCompleted(mViewData.getOrder().getStatus())) {
+        if(!CommonConstant.OrderStatus.isCompleted(mViewData.getOrder().getStatus())) {
             vOrderCompleteBtn.setEnabled(true);
             vOrderCompleteBtn.setVisibility(View.VISIBLE);
         } else {
@@ -180,17 +198,19 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
         ModelHandler.OrderRequestor.requestOrderDetail(client, mViewData.getOrder().getId(), (order) -> {
             mViewData.setOrder(order);
             onViewDataChanged();
-        }, error -> {
-            String message = error.getMessage();
+        }, this::showErrorMessage);
+    }
 
-            if (error instanceof NoConnectionError) {
-                message = getString(R.string.message_no_connection);
-            } else if(error instanceof ServerError || error instanceof TimeoutError) {
-                message = getString(R.string.message_server_error);
-            }
+    private void showErrorMessage(Exception error) {
+        String message = error.getMessage();
 
-            Snackbar.make(vAccountNameTV, message, Snackbar.LENGTH_LONG).show();
-        });
+        if (error instanceof NoConnectionError) {
+            message = getString(R.string.message_no_connection);
+        } else if(error instanceof ServerError || error instanceof TimeoutError) {
+            message = getString(R.string.message_server_error);
+        }
+
+        Snackbar.make(vAccountNameTV, message, Snackbar.LENGTH_LONG).show();
     }
 
     public class OrderItemViewHolder {

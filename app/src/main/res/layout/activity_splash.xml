@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/image_splash"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:src="@drawable/splash"
+        android:scaleType="fitCenter"/>
+
+    <TextView
+        android:id="@+id/text_app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/image_splash"
+        android:layout_centerHorizontal="true"
+        android:text="Anheuser-Busch"
+        android:textSize="@dimen/text_size_headline"/>
+
+    <TextView
+        android:id="@+id/text_app_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_app_name"
+        android:layout_centerHorizontal="true"
+        android:text="Delivery App"
+        android:textSize="@dimen/text_size_headline"/>
+
+</RelativeLayout>

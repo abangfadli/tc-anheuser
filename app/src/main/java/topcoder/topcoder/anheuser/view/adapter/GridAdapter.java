@@ -1,6 +1,5 @@
 package topcoder.topcoder.anheuser.view.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -22,7 +19,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
 import topcoder.topcoder.anheuser.R;
-import topcoder.topcoder.anheuser.constant.CommonConstants;
+import topcoder.topcoder.anheuser.constant.CommonConstant;
 import topcoder.topcoder.anheuser.util.ActionUtil;
 import topcoder.topcoder.anheuser.view.data.common.Order;
 import topcoder.topcoder.anheuser.view.data.main.MainTile;
@@ -176,7 +173,7 @@ public class GridAdapter extends ArrayAdapter<MainTile> implements OnMapReadyCal
             vOrderNameTextView.setText(item.getName());
             vOrderAddressTextView.setText(item.getAddress());
 
-            if(CommonConstants.OrderStatus.isCompleted(item.getStatus())) {
+            if(CommonConstant.OrderStatus.isCompleted(item.getStatus())) {
                 vTileTitleTextView.setText(mContext.getString(R.string.completed));
                 vTileActionImageView.setVisibility(View.GONE);
             } else {

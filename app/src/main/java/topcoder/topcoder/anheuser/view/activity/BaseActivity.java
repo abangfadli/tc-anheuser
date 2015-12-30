@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.salesforce.androidsdk.app.SalesforceSDKManager;
 import com.salesforce.androidsdk.rest.RestClient;
@@ -14,7 +13,7 @@ import com.salesforce.androidsdk.ui.SalesforceActivity;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import topcoder.topcoder.anheuser.R;
-import topcoder.topcoder.anheuser.constant.CommonConstants;
+import topcoder.topcoder.anheuser.constant.CommonConstant;
 import topcoder.topcoder.anheuser.view.data.BaseViewData;
 
 /**
@@ -68,7 +67,7 @@ public abstract class BaseActivity<VD extends BaseViewData> extends SalesforceAc
     protected void onAdjustProperties() {
         // Default State
         mContentViewId = R.layout.activity_main;
-        mLeftButtonType = CommonConstants.LeftButton.SYNC;
+        mLeftButtonType = CommonConstant.LeftButton.SYNC;
     }
 
     @Override
@@ -103,12 +102,12 @@ public abstract class BaseActivity<VD extends BaseViewData> extends SalesforceAc
     private void setupToolbar() {
         if(vToolbar != null) {
             switch (mLeftButtonType) {
-                case CommonConstants.LeftButton.BACK:
+                case CommonConstant.LeftButton.BACK:
                     vToolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
                     break;
-                case CommonConstants.LeftButton.NONE:
+                case CommonConstant.LeftButton.NONE:
                     break;
-                case CommonConstants.LeftButton.SYNC:
+                case CommonConstant.LeftButton.SYNC:
                     vToolbar.setNavigationIcon(R.drawable.ic_sync_black_24dp);
                     break;
             }
