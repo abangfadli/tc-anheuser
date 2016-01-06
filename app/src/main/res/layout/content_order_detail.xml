@@ -29,7 +29,7 @@
             android:id="@+id/btn_order_complete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/order_complete"
+            android:text="@string/action_complete_order"
             android:paddingTop="20dp"
             android:paddingBottom="20dp"
             android:textSize="@dimen/text_size_accent"/>

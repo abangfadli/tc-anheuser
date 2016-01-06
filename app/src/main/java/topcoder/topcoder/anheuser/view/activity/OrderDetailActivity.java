@@ -2,8 +2,6 @@ package topcoder.topcoder.anheuser.view.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
@@ -132,7 +130,7 @@ public class OrderDetailActivity extends BaseActivity<OrderDetailViewData> {
                 }, (error) -> {
                     // Error when marking as complete. Set it to dirty and update next time syncing.
                     progressDialog.hide();
-                    vOrderCompleteBtn.setText(R.string.completed);
+                    vOrderCompleteBtn.setText(R.string.order_complete);
                     vOrderCompleteBtn.setEnabled(false);
                     String message = error.getMessage();
                     message = getString(R.string.message_offline_dirty_sync);

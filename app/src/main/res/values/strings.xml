@@ -11,7 +11,8 @@
 
 
     <!-- ORDER DETAIL -->
-    <string name="order_complete">Complete Order</string>
+    <string name="action_complete_order">Complete Order</string>
+    <string name="order_complete">Order Complete</string>
     <string name="order_number_format">Order number %1$s</string>
     <string name="order_total_format">Order Total: %1$s</string>
 
