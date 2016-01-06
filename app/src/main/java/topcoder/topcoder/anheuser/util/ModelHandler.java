@@ -303,7 +303,7 @@ public class ModelHandler {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
             String dateString = simpleDateFormat.format(date);
 
-            String query = "SELECT %s From Order Where Status != 'DRAFT' AND Contract.EndDate = " + dateString;
+            String query = "SELECT %s From Order Where Status != 'DRAFT' AND EndDate = " + dateString;
             sendQueryRequest(client, String.format(query, fieldJoined), (request, response) -> {
 
                 try {
