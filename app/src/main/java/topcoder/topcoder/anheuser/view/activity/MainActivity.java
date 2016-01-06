@@ -1,11 +1,17 @@
 package topcoder.topcoder.anheuser.view.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
@@ -61,6 +67,13 @@ public class MainActivity extends BaseActivity<MainViewData> {
     //================================================================================
     // LIFE CYCLE
     //================================================================================
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        registerReceiver(mConnectionReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
     @Override
     protected void onAdjustProperties() {
         super.onAdjustProperties();
@@ -303,4 +316,21 @@ public class MainActivity extends BaseActivity<MainViewData> {
 
         Snackbar.make(vMainTileGV, message, Snackbar.LENGTH_LONG).show();
     }
+
+
+    private BroadcastReceiver mConnectionReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean noConnectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
+
+            if(!noConnectivity) {
+                ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo netInfo = cm.getActiveNetworkInfo();
+
+                if(netInfo != null && netInfo.isConnected()) {
+                    updateDirtyOrder(false);
+                }
+            }
+        }
+    };
 }

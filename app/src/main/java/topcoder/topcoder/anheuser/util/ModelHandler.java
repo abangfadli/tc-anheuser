@@ -377,7 +377,7 @@ public class ModelHandler {
          */
         public static void putCompletedOrder(RestClient client, String orderId, Action0 onSuccess, Action1<Exception> onError) {
             HashMap<String, Object> fields = new HashMap<>();
-            fields.put("Status", CommonConstant.OrderStatus.COMPLETED); // TODO Move hardcoded string to a specific class.
+            fields.put("Status", CommonConstant.OrderStatus.COMPLETED);
             String objectType = "Order";
 
             sendUpdateRequest(client, objectType, orderId, fields, (request, response) -> {
@@ -408,7 +408,7 @@ public class ModelHandler {
         public static int totalUpdatedOrder;
 
         /**
-         * Try to update dirty in Order
+         * Update dirty Order's to Salesforce server
          * @param client JiraClient
          * @param onSuccess
          * @param onError
