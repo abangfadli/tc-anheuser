@@ -37,7 +37,24 @@ public class OrderConverter {
         order.setTotal(CurrencyUtil.formatCurrency("USD", Locale.US, modelData.getTotalAmount()));
 
         if(modelData.getShippingAddress() != null) {
-            order.setAddress(modelData.getShippingAddress().getStreet());
+            String address = modelData.getShippingAddress().getStreet();
+            if(modelData.getShippingAddress().getCity() != null) {
+                address += " " + modelData.getShippingAddress().getCity();
+            }
+
+            if(modelData.getShippingAddress().getState() != null) {
+                address += " " + modelData.getShippingAddress().getState();
+            }
+
+            if(modelData.getShippingAddress().getCountry() != null) {
+                address += " " + modelData.getShippingAddress().getCountry();
+            }
+
+            if(modelData.getShippingAddress().getPostalCode() != null) {
+                address += " " + modelData.getShippingAddress().getPostalCode();
+            }
+
+            order.setAddress(address);
             order.setLatitude(modelData.getShippingAddress().getLatitude());
             order.setLongitude(modelData.getShippingAddress().getLongitude());
         }
