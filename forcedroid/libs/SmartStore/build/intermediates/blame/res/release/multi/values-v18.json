@@ -1,5 +1,29 @@
 [
     {
+        "outputFile": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/tc-anheuser/forcedroid/libs/SmartStore/build/intermediates/res/merged/release/values-v18/values-v18.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 48,
+                    "endOffset": 99
+                },
+                "from": {
+                    "file": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/tc-anheuser/forcedroid/libs/SmartStore/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.1/res/values-v18/values-v18.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 229,
+                        "endColumn": 48,
+                        "endOffset": 273
+                    }
+                }
+            }
+        ]
+    },
+    {
         "outputFile": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/build/intermediates/res/merged/release/values-v18/values-v18.xml",
         "map": [
             {

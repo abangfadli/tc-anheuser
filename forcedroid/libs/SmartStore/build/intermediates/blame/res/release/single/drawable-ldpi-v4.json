@@ -1,5 +1,9 @@
 [
     {
+        "merged": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/tc-anheuser/forcedroid/libs/SmartStore/build/intermediates/res/merged/release/drawable-ldpi-v4/sf__icon.png",
+        "source": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/tc-anheuser/forcedroid/libs/SmartStore/build/intermediates/exploded-aar/tc-anheuser.forcedroid.libs/SalesforceSDK/unspecified/res/drawable-ldpi-v4/sf__icon.png"
+    },
+    {
         "merged": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/build/intermediates/res/merged/release/drawable-ldpi-v4/sf__icon.png",
         "source": "/Users/ahmadfadli/Desktop/apps/topcoder/anheuser/Anheuser/forcedroid/libs/SmartStore/build/intermediates/exploded-aar/Anheuser.forcedroid.libs/SalesforceSDK/unspecified/res/drawable-ldpi-v4/sf__icon.png"
     }
