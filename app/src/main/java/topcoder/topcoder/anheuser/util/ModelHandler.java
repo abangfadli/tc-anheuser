@@ -319,16 +319,21 @@ public class ModelHandler {
                     int count = orderModelDataList.size();
                     List<String> completedDetail = new ArrayList<>();
 
+                    // Add Overview Tile (The first tile)
+                    List<MainTile> tileList = new ArrayList<>(OrderConverter.convertOrder(orderModelDataList));
+                    tileList.add(0, OverviewRequestor.getOverviewFromOrder(orderModelDataList));
+
+                    if(count == 0) {
+                        ActionUtil.tryCall(onSuccess, tileList);
+                        return;
+                    }
+
                     for (OrderModelData orderModelData : orderModelDataList) {
                         requestOrderDetail(client, orderModelData.getId(), order -> {
                             completedDetail.add(order.getId());
 
                             // Check if all Order's Detail successfully retrieved
                             if(completedDetail.size() >= count) {
-
-                                // Add Overview Tile (The first tile)
-                                List<MainTile> tileList = new ArrayList<>(OrderConverter.convertOrder(orderModelDataList));
-                                tileList.add(0, OverviewRequestor.getOverviewFromOrder(orderModelDataList));
                                 ActionUtil.tryCall(onSuccess, tileList);
                             }
                         }, error -> ActionUtil.tryCall(onError, error));
