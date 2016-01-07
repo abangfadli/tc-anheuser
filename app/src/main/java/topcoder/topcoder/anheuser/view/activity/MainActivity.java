@@ -276,10 +276,10 @@ public class MainActivity extends BaseActivity<MainViewData> {
         // Mark start time
         long startTime = System.currentTimeMillis();
 
-        ModelHandler.OrderRequestor.requestActiveOrder(client, (titleList) -> {
+        ModelHandler.OrderRequestor.requestActiveOrder(client, (tileList) -> {
 
             // If loading time is < 3 seconds then show the loading animation for 3 seconds.
-            // On a very fast internet connection, it'll make the UI ugly because the layout appear and then immediately dissapeared
+            // On a very fast internet connection, it'll make the UI ugly because the layout appear and then immediately disappeared
             long diff = MINIMUM_LOADING_TIME - (System.currentTimeMillis() - startTime);
             diff = (diff < 0 ? 0 : diff);
 
@@ -287,7 +287,7 @@ public class MainActivity extends BaseActivity<MainViewData> {
                 ViewExpandCollapseUtil.animateCollapsing(vSyncProgressLayout);
                 isReloading = false;
 
-                mViewData.setTileList(titleList);
+                mViewData.setTileList(tileList);
                 onViewDataChanged();
 
                 Snackbar.make(vMainTileGV, R.string.message_order_loaded, Snackbar.LENGTH_SHORT).show();

@@ -174,7 +174,7 @@ public class FullMapActivity extends BaseActivity<FullMapViewData> implements On
             builder.include(marker.getPosition());
         }
         LatLngBounds bounds = builder.build();
-        mGoogleMap.setOnMapLoadedCallback(() -> mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 20)));
+        mGoogleMap.setOnMapLoadedCallback(() -> mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100)));
 
     }
 }

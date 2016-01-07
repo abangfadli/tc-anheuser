@@ -303,7 +303,7 @@ public class ModelHandler {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
             String dateString = simpleDateFormat.format(date);
 
-            String query = "SELECT %s From Order Where Status != 'DRAFT' AND EndDate = " + dateString;
+            String query = "SELECT %s From Order Where Status != 'DRAFT' AND EffectiveDate = " + dateString;
             sendQueryRequest(client, String.format(query, fieldJoined), (request, response) -> {
 
                 try {
@@ -316,10 +316,23 @@ public class ModelHandler {
                     ModelHolder.getInstance().setOrderModelList(orderModelDataList);
                     wipeAndSaveOrder(orderModelDataList);
 
-                    // Add Overview Tile (The first tile)
-                    List<MainTile> tileList = new ArrayList<>(OrderConverter.convertOrder(orderModelDataList));
-                    tileList.add(0, OverviewRequestor.getOverviewFromOrder(orderModelDataList));
-                    ActionUtil.tryCall(onSuccess, tileList);
+                    int count = orderModelDataList.size();
+                    List<String> completedDetail = new ArrayList<>();
+
+                    for (OrderModelData orderModelData : orderModelDataList) {
+                        requestOrderDetail(client, orderModelData.getId(), order -> {
+                            completedDetail.add(order.getId());
+
+                            // Check if all Order's Detail successfully retrieved
+                            if(completedDetail.size() >= count) {
+
+                                // Add Overview Tile (The first tile)
+                                List<MainTile> tileList = new ArrayList<>(OrderConverter.convertOrder(orderModelDataList));
+                                tileList.add(0, OverviewRequestor.getOverviewFromOrder(orderModelDataList));
+                                ActionUtil.tryCall(onSuccess, tileList);
+                            }
+                        }, error -> ActionUtil.tryCall(onError, error));
+                    }
 
                 } catch (JSONException | ParseException | IOException e) {
                     e.printStackTrace();
